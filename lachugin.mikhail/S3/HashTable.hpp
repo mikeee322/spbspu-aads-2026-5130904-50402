@@ -29,6 +29,12 @@ namespace lachugin
     size_ (0)
   {}
 
+  template< class Key, class Value, class Hash, class Equal >
+  HashTable< Key, Value, Hash, Equal >::~HashTable()
+  {
+    delete[] buckets_;
+  }
+
 
 }
 #endif
