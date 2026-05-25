@@ -2,13 +2,24 @@
 #define HASHTABLE_HPP
 #include "../common/list.hpp"
 
-template< class Key, class Value, class Hash, class Equal >
-class HashTable {
-public:
-  void add(Key k, Value v);
-  Value drop(Key k);
-  bool has(Key k);
-  void rehash(size_t slots);
-};
+namespace lachugin
+{
+  template< class Key, class Value, class Hash, class Equal >
+  class HashTable {
+  public:
+    HashTable(size_t cap);
+    ~HashTable();
 
+    void add(const Key& k, const Value& v);
+    Value drop(const Key& k);
+    bool has(const Key& k) const;
+
+  private:
+    List< std::pair< Key, Value > >* buckets_;
+    size_t cap_;
+    size_t size_;
+    Hash hasher_;
+    Equal equal_;
+  };
+}
 #endif
