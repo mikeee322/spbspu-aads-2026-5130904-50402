@@ -1,11 +1,13 @@
 #ifndef HASHTABLE_HPP
 #define HASHTABLE_HPP
 #include "../common/list.hpp"
-
+#include "../common/itters.hpp"
+#include "../common/node.hpp"
 namespace lachugin
 {
   template< class Key, class Value, class Hash, class Equal >
   class HashTable {
+    using value_type = std::pair< Key, Value >;
   public:
     HashTable(size_t cap);
     ~HashTable();
@@ -35,6 +37,22 @@ namespace lachugin
     delete[] buckets_;
   }
 
+  template< class Key, class Value, class Hash, class Equal >
+  void HashTable< Key, Value, Hash, Equal >::add(const Key &k, const Value &v)
+  {
+    size_t index = hasher_(k);
+    List< value_type >&buck = buckets_[index];
+    LIter< value_type > it = buck.begin();
+    for (; it != buck.end(); ++it)
+    {
+      if (equal_((*it).first, k))
+      {
+        throw std::logic_error("err: key already exist");
+      }
+    }
+    buck.pushBack({k, v});
+    size_++;
+  }
 
 }
 #endif
