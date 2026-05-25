@@ -21,5 +21,14 @@ namespace lachugin
     Hash hasher_;
     Equal equal_;
   };
+
+  template< class Key, class Value, class Hash, class Equal >
+  HashTable<Key, Value, Hash, Equal>::HashTable(size_t cap):
+    buckets_(new List< std::pair< Key, Value > >[cap]),
+    cap_ (cap),
+    size_ (0)
+  {}
+
+
 }
 #endif
