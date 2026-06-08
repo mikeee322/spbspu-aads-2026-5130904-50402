@@ -71,7 +71,19 @@ namespace lachugin
   template<class Key, class Value, class Hash, class Equal >
   Value HashTable< Key, Value, Hash, Equal >::drop(const Key &k) {
     size_t index = hasher_(k);
+    List< value_type >&buck = buckets_[index];
+    LIter< value_type > it = buck.begin();
+    for (; it != buck.end(); ++it) {
+      if (equal_((*it).first, k)) {
+        Value result = (*it).second;
 
+        buck.erase(it);
+
+        --size_;
+        return result;
+      }
+    }
+    throw std::out_of_range ("err: out of range");
   }
 
 
