@@ -54,5 +54,26 @@ namespace lachugin
     size_++;
   }
 
+  template< class Key, class Value, class Hash, class Equal >
+  bool HashTable< Key, Value, Hash, Equal >::has(const Key &k) const
+  {
+    size_t index = hasher_(k);
+    const List< value_type >&buck = buckets_[index];
+    LCIter< value_type > it = buck.begin();
+    for (; it != buck.end(); ++it) {
+      if (equal_((*it).first, k)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  template<class Key, class Value, class Hash, class Equal >
+  Value HashTable< Key, Value, Hash, Equal >::drop(const Key &k) {
+    size_t index = hasher_(k);
+
+  }
+
+
 }
 #endif
