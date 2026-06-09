@@ -11,6 +11,10 @@ namespace lachugin
   public:
     HashTable(size_t cap);
     ~HashTable();
+    HashTable(const HashTable& other);
+    HashTable& operator=(const HashTable& other);
+    HashTable(HashTable&& other) noexcept;
+    HashTable& operator=(HashTable&& other) noexcept;
 
     void add(const Key& k, const Value& v);
     Value drop(const Key& k);
@@ -22,6 +26,7 @@ namespace lachugin
     bool empty() const noexcept;
 
     void clear();
+    void swap(HashTable& other) noexcept;
   private:
     List< std::pair< Key, Value > >* buckets_;
     size_t cap_;
@@ -138,8 +143,74 @@ namespace lachugin
     size_ = 0;
   }
 
+  template< class Key, class Value, class Hash, class Equal >
+  HashTable< Key, Value, Hash, Equal >::HashTable(const HashTable& other):
+  buckets_(new List< value_type >[other.cap_]),
+  cap_(other.cap_),
+  size_(other.size_),
+  hasher_(other.hasher_),
+  equal_(other.equal_)
+  {
+    for (size_t i = 0; i < cap_; ++i)
+    {
+      buckets_[i] = other.buckets_[i];
+    }
+  }
 
+  template< class Key, class Value, class Hash, class Equal >
+  HashTable< Key, Value, Hash, Equal >::HashTable(HashTable&& other) noexcept:
+  buckets_(other.buckets_),
+  cap_(other.cap_),
+  size_(other.size_),
+  hasher_(std::move(other.hasher_)),
+  equal_(std::move(other.equal_))
+  {
+    other.buckets_ = nullptr;
+    other.cap_ = 0;
+    other.size_ = 0;
+  }
 
+  template< class Key, class Value, class Hash, class Equal >
+  void HashTable< Key, Value, Hash, Equal >::swap(HashTable& other) noexcept
+  {
+    std::swap(buckets_, other.buckets_);
+    std::swap(cap_, other.cap_);
+    std::swap(size_, other.size_);
+    std::swap(hasher_, other.hasher_);
+    std::swap(equal_, other.equal_);
+  }
+
+  template< class Key, class Value, class Hash, class Equal >
+  HashTable<Key, Value, Hash, Equal>&
+    HashTable<Key, Value, Hash, Equal>::operator=(const HashTable& other)
+  {
+    if (this != &other)
+    {
+      HashTable tmp(other);
+      swap(tmp);
+    }
+    return* this;
+  }
+
+  template< class Key, class Value, class Hash, class Equal >
+  HashTable< Key, Value, Hash, Equal >&
+    HashTable< Key, Value, Hash, Equal >::operator=(HashTable&& other) noexcept
+  {
+    if (this != &other)
+    {
+      delete[] buckets_;
+
+      buckets_ = other.buckets_;
+      cap_ = other.cap_;
+      size_ = other.size_;
+
+      other.buckets_ = nullptr;
+      other.cap_ = 0;
+      other.size_ = 0;
+    }
+
+    return* this;
+  }
 
 }
 #endif
