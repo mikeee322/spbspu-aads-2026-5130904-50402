@@ -3,8 +3,63 @@
 
 namespace lachugin {
 
-  Graph::Graph()
+  Graph::Graph():
+    edges_(50, 5, 20)
   {}
+
+  bool Graph::hasEdge(const std::string &from, const std::string &to) const
+  {
+    Edge edge{from, to};
+    return edges_.has(edge);
+  }
+
+  void lachugin::Graph::bind(
+    const std::string& from,
+    const std::string& to,
+    size_t weight)
+  {
+    addVertex(from);
+    addVertex(to);
+
+    Edge edge;
+    edge.from = from;
+    edge.to = to;
+
+    if (!edges_.has(edge))
+    {
+      Weights weights;
+      weights.pushBack(weight);
+      edges_.add(edge, weights);
+      return;
+    }
+
+    edges_.get(edge).pushBack(weight);
+  }
+  void Graph::cut(const std::string& from,const std::string& to, size_t weight)
+  {
+    Edge edge;
+    edge.from = from;
+    edge.to = to;
+
+    if (!edges_.has(edge))
+    {
+      throw std::logic_error("Edge not found");
+    }
+    Weights& weights = edges_.get(edge);
+    for (auto it = weights.begin(); it != weights.end(); ++it)
+    {
+      if (*it == weight)
+      {
+        weights.erase(it);
+        if (weights.empty())
+        {
+          edges_.drop(edge);
+        }
+        return;
+      }
+    }
+    throw std::logic_error("Weight not found");
+  }
 
   bool Graph::hasVertex(const std::string &name) const
   {
