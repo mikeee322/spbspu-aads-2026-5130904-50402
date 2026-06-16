@@ -76,28 +76,17 @@ namespace lachugin
   template < class T >
   List< T >& List< T >::operator=(const List< T >& other)
   {
-    if (this != other)
+    if (this != &other)
     {
       clear();
-      auto itO = other.begin();
-      auto itT = this->begin();
-
-      while (itO != other.end())
+      for (auto it = other.begin(); it != other.end(); ++it)
       {
-        Node< T >* n = nullptr;
-        if (itT == fake)
-        {
-          n = this->add(*itO);
-        }
-        else
-        {
-          n = this->addNext(*itO, n);
-        }
-        ++itO;
+        pushBack(*it);
       }
     }
     return* this;
   }
+
 
   template < class T >
   Node< T >* List< T >::add(const T& val)
