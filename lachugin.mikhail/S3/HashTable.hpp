@@ -3,13 +3,15 @@
 #include "../common/list.hpp"
 #include "../common/itters.hpp"
 #include "../common/node.hpp"
+#include <stdexcept>
+#include "HashIter.hpp"
 namespace lachugin
 {
   template< class Key, class Value, class Hash, class Equal >
   class HashTable {
     using value_type = std::pair< Key, Value >;
   public:
-    HashTable(size_t cap);
+    HashTable(size_t bucketCount, size_t bucketCapacity, size_t spareCapacity = 10);
     ~HashTable();
     HashTable(const HashTable& other);
     HashTable& operator=(const HashTable& other);
@@ -27,52 +29,133 @@ namespace lachugin
 
     void clear();
     void swap(HashTable& other) noexcept;
+
+    size_t bucketFirst(size_t bucket) const noexcept;
+    size_t overflowFirst() const noexcept;
   private:
-    List< std::pair< Key, Value > >* buckets_;
-    size_t cap_;
+    HashItem< Key, Value >* data_;
     size_t size_;
+
+    size_t bucketCount_;
+    size_t bucketCapacity_;
+    size_t spareCapacity_;
+
     Hash hasher_;
     Equal equal_;
   };
 
   template< class Key, class Value, class Hash, class Equal >
-  HashTable< Key, Value, Hash, Equal >::HashTable(size_t cap):
-    buckets_(new List< std::pair< Key, Value > >[cap]),
-    cap_ (cap),
-    size_ (0)
-  {}
+  HashTable< Key, Value, Hash, Equal >::HashTable(
+    size_t bucketCount,
+    size_t bucketCapacity,
+    size_t spareCapacity):
+  data_(nullptr),
+  bucketCount_(bucketCount),
+  bucketCapacity_(bucketCapacity),
+  spareCapacity_(spareCapacity),
+  size_(0),
+  hasher_(Hash()),
+  equal_(Equal())
+  {
+    if (bucketCount == 0 || bucketCapacity == 0)
+    {
+      throw std::invalid_argument("Invalid table size");
+    }
+
+    data_ = new HashItem< Key, Value >
+    [
+      bucketCount_ * bucketCapacity_ + spareCapacity_
+    ];
+  }
+
+  template< class Key, class Value, class Hash, class Equal >
+  size_t HashTable< Key, Value, Hash, Equal >::bucketFirst(size_t bucket) const noexcept
+  {
+    return bucket * bucketCapacity_;
+  }
+
+  template< class Key, class Value, class Hash, class Equal >
+  size_t HashTable< Key, Value, Hash, Equal >::overflowFirst() const noexcept
+  {
+    return bucketCount_ * bucketCapacity_;
+  }
 
   template< class Key, class Value, class Hash, class Equal >
   HashTable< Key, Value, Hash, Equal >::~HashTable()
   {
-    delete[] buckets_;
+    delete[] data_;
   }
 
   template< class Key, class Value, class Hash, class Equal >
-  void HashTable< Key, Value, Hash, Equal >::add(const Key &k, const Value &v)
+  void HashTable< Key, Value, Hash, Equal >::add(
+    const Key& key,
+    const Value& value)
   {
-    size_t index = hasher_(k);
-    List< value_type >&buck = buckets_[index];
-    LIter< value_type > it = buck.begin();
-    for (; it != buck.end(); ++it)
+    if (has(key))
     {
-      if (equal_((*it).first, k))
+      throw std::logic_error("Key already exists");
+    }
+
+    size_t bucket = hasher_(key) % bucketCount_;
+    size_t first = bucketFirst(bucket);
+    for (size_t i = 0; i < bucketCapacity_; ++i)
+    {
+      size_t pos = first + i;
+
+      if (!data_[pos].occupied)
       {
-        throw std::logic_error("err: key already exist");
+        data_[pos].key = key;
+        data_[pos].value = value;
+        data_[pos].occupied = true;
+
+        ++size_;
+        return;
       }
     }
-    buck.pushBack({k, v});
-    size_++;
+    size_t overflow = overflowFirst();
+    for (size_t i = 0; i < spareCapacity_; ++i)
+    {
+      size_t pos = overflow + i;
+
+      if (!data_[pos].occupied)
+      {
+        data_[pos].key = key;
+        data_[pos].value = value;
+        data_[pos].occupied = true;
+
+        ++size_;
+        return;
+      }
+    }
+
+    throw std::overflow_error("Hash table overflow");
   }
 
   template< class Key, class Value, class Hash, class Equal >
-  bool HashTable< Key, Value, Hash, Equal >::has(const Key &k) const
+  bool HashTable< Key, Value, Hash, Equal >::has(const Key& key) const
   {
-    size_t index = hasher_(k);
-    const List< value_type >&buck = buckets_[index];
-    LCIter< value_type > it = buck.begin();
-    for (; it != buck.end(); ++it) {
-      if (equal_((*it).first, k)) {
+    size_t bucket = hasher_(key) % bucketCount_;
+
+    size_t first = bucketFirst(bucket);
+
+    for (size_t i = 0; i < bucketCapacity_; ++i)
+    {
+      size_t pos = first + i;
+
+      if (data_[pos].occupied &&
+          equal_(data_[pos].key, key))
+      {
+        return true;
+      }
+    }
+    size_t overflow = overflowFirst();
+    for (size_t i = 0; i < spareCapacity_; ++i)
+    {
+      size_t pos = overflow + i;
+
+      if (data_[pos].occupied &&
+          equal_(data_[pos].key, key))
+      {
         return true;
       }
     }
@@ -80,136 +163,200 @@ namespace lachugin
   }
 
   template< class Key, class Value, class Hash, class Equal >
-  Value HashTable< Key, Value, Hash, Equal >::drop(const Key &k) {
-    size_t index = hasher_(k);
-    List< value_type >&buck = buckets_[index];
-    LIter< value_type > it = buck.begin();
-    for (; it != buck.end(); ++it) {
-      if (equal_((*it).first, k)) {
-        Value result = (*it).second;
+  Value HashTable< Key, Value, Hash, Equal >::drop(const Key& key)
+  {
+    size_t bucket = hasher_(key) % bucketCount_;
+    size_t first = bucketFirst(bucket);
+    for (size_t i = 0; i < bucketCapacity_; ++i)
+    {
+      size_t pos = first + i;
 
-        buck.erase(it);
-
+      if (data_[pos].occupied &&
+          equal_(data_[pos].key, key))
+      {
+        Value result = data_[pos].value;
+        data_[pos].occupied = false;
         --size_;
         return result;
       }
     }
-    throw std::out_of_range ("err: out of range");
+    size_t overflow = overflowFirst();
+    for (size_t i = 0; i < spareCapacity_; ++i)
+    {
+      size_t pos = overflow + i;
+      if (data_[pos].occupied &&
+          equal_(data_[pos].key, key))
+      {
+        Value result = data_[pos].value;
+        data_[pos].occupied = false;
+        --size_;
+        return result;
+      }
+    }
+    throw std::out_of_range("Key not found");
   }
 
-
   template< class Key, class Value, class Hash, class Equal >
-  size_t HashTable< Key, Value, Hash, Equal >::size() const noexcept {
+  size_t HashTable< Key, Value, Hash, Equal >::size() const noexcept
+  {
     return size_;
   }
 
   template< class Key, class Value, class Hash, class Equal >
-  bool HashTable< Key, Value, Hash, Equal >::empty() const noexcept {
+  bool HashTable< Key, Value, Hash, Equal >::empty() const noexcept
+  {
     return size_ == 0;
   }
 
-  template < class Key, class Value, class Hash, class Equal >
-  Value &HashTable< Key, Value, Hash, Equal >::get(const Key &k) {
-    size_t index = hasher_(k);
-    List< value_type >&buck = buckets_[index];
-    LIter< value_type > it = buck.begin();
+  template< class Key, class Value, class Hash, class Equal >
+  Value& HashTable< Key, Value, Hash, Equal >::get(const Key& key)
+  {
+    size_t bucket = hasher_(key) % bucketCount_;
+    size_t first = bucketFirst(bucket);
+    for (size_t i = 0; i < bucketCapacity_; ++i)
+    {
+      size_t pos = first + i;
 
-    for (; it != buck.end(); ++it) {
-      if (equal_((*it).first, k)) {
-        return (*it).second;
+      if (data_[pos].occupied &&
+          equal_(data_[pos].key, key))
+      {
+        return data_[pos].value;
       }
     }
-    throw std::out_of_range ("err: out of range");
-  }
+    size_t overflow = overflowFirst();
 
-  template < class Key, class Value, class Hash, class Equal >
-  const Value &HashTable< Key, Value, Hash, Equal >::get(const Key &k) const {
-    size_t index = hasher_(k);
-    const List< value_type >&buck = buckets_[index];
-    LCIter< value_type > it = buck.begin();
-    for (; it != buck.end(); ++it) {
-      if (equal_((*it).first, k)) {
-        return (*it).second;
+    for (size_t i = 0; i < spareCapacity_; ++i)
+    {
+      size_t pos = overflow + i;
+
+      if (data_[pos].occupied &&
+          equal_(data_[pos].key, key))
+      {
+        return data_[pos].value;
       }
     }
-    throw std::out_of_range ("err: out of range");
+
+    throw std::out_of_range("Key not found");
   }
 
-  template < class Key, class Value, class Hash, class Equal >
-  void HashTable< Key, Value, Hash, Equal >::clear() {
-    for (size_t i = 0; i < cap_; ++i) {
-      buckets_[i].clear();
+  template< class Key, class Value, class Hash, class Equal >
+  const Value& HashTable< Key, Value, Hash, Equal >::get(const Key& key) const
+  {
+    size_t bucket = hasher_(key) % bucketCount_;
+    size_t first = bucketFirst(bucket);
+    for (size_t i = 0; i < bucketCapacity_; ++i)
+    {
+      size_t pos = first + i;
+      if (data_[pos].occupied && equal_(data_[pos].key, key))
+      {
+        return data_[pos].value;
+      }
+    }
+    size_t overflow = overflowFirst();
+    for (size_t i = 0; i < spareCapacity_; ++i)
+    {
+      size_t pos = overflow + i;
+      if (data_[pos].occupied && equal_(data_[pos].key, key))
+      {
+        return data_[pos].value;
+      }
+    }
+    throw std::out_of_range("Key not found");
+  }
+
+  template< class Key, class Value, class Hash, class Equal >
+  void HashTable< Key, Value, Hash, Equal >::clear()
+  {
+    size_t cap = bucketCount_ * bucketCapacity_ + spareCapacity_;
+    for (size_t i = 0; i < cap; ++i)
+    {
+      data_[i].occupied = false;
     }
     size_ = 0;
   }
 
   template< class Key, class Value, class Hash, class Equal >
-  HashTable< Key, Value, Hash, Equal >::HashTable(const HashTable& other):
-  buckets_(new List< value_type >[other.cap_]),
-  cap_(other.cap_),
+  HashTable< Key, Value, Hash, Equal >::HashTable(
+    const HashTable& other):
+  data_(nullptr),
+  bucketCount_(other.bucketCount_),
+  bucketCapacity_(other.bucketCapacity_),
+  spareCapacity_(other.spareCapacity_),
   size_(other.size_),
   hasher_(other.hasher_),
   equal_(other.equal_)
   {
-    for (size_t i = 0; i < cap_; ++i)
+    size_t cap = bucketCount_ * bucketCapacity_ + spareCapacity_;
+    data_ = new HashItem< Key, Value >[cap];
+    for (size_t i = 0; i < cap; ++i)
     {
-      buckets_[i] = other.buckets_[i];
+      data_[i] = other.data_[i];
     }
   }
 
   template< class Key, class Value, class Hash, class Equal >
-  HashTable< Key, Value, Hash, Equal >::HashTable(HashTable&& other) noexcept:
-  buckets_(other.buckets_),
-  cap_(other.cap_),
+  HashTable< Key, Value, Hash, Equal >::HashTable(
+    HashTable&& other) noexcept:
+  data_(other.data_),
+  bucketCount_(other.bucketCount_),
+  bucketCapacity_(other.bucketCapacity_),
+  spareCapacity_(other.spareCapacity_),
   size_(other.size_),
   hasher_(std::move(other.hasher_)),
   equal_(std::move(other.equal_))
   {
-    other.buckets_ = nullptr;
-    other.cap_ = 0;
+    other.data_ = nullptr;
+    other.bucketCount_ = 0;
+    other.bucketCapacity_ = 0;
+    other.spareCapacity_ = 0;
     other.size_ = 0;
   }
 
   template< class Key, class Value, class Hash, class Equal >
-  void HashTable< Key, Value, Hash, Equal >::swap(HashTable& other) noexcept
+  void HashTable< Key, Value, Hash, Equal >::swap(
+    HashTable& other) noexcept
   {
-    std::swap(buckets_, other.buckets_);
-    std::swap(cap_, other.cap_);
+    std::swap(data_, other.data_);
+    std::swap(bucketCount_, other.bucketCount_);
+    std::swap(bucketCapacity_, other.bucketCapacity_);
+    std::swap(spareCapacity_, other.spareCapacity_);
     std::swap(size_, other.size_);
     std::swap(hasher_, other.hasher_);
     std::swap(equal_, other.equal_);
   }
 
   template< class Key, class Value, class Hash, class Equal >
-  HashTable<Key, Value, Hash, Equal>&
-    HashTable<Key, Value, Hash, Equal>::operator=(const HashTable& other)
+  HashTable< Key, Value, Hash, Equal >&
+    HashTable< Key, Value, Hash, Equal >::operator=(const HashTable& other)
   {
     if (this != &other)
     {
       HashTable tmp(other);
       swap(tmp);
     }
-    return* this;
+    return *this;
   }
 
   template< class Key, class Value, class Hash, class Equal >
-  HashTable< Key, Value, Hash, Equal >&
-    HashTable< Key, Value, Hash, Equal >::operator=(HashTable&& other) noexcept
+  HashTable<Key, Value, Hash, Equal>&
+    HashTable<Key, Value, Hash, Equal>::operator=(
+    HashTable&& other) noexcept
   {
     if (this != &other)
     {
-      delete[] buckets_;
-
-      buckets_ = other.buckets_;
-      cap_ = other.cap_;
+      delete[] data_;
+      data_ = other.data_;
+      bucketCount_ = other.bucketCount_;
+      bucketCapacity_ = other.bucketCapacity_;
+      spareCapacity_ = other.spareCapacity_;
       size_ = other.size_;
-
-      other.buckets_ = nullptr;
-      other.cap_ = 0;
+      other.data_ = nullptr;
+      other.bucketCount_ = 0;
+      other.bucketCapacity_ = 0;
+      other.spareCapacity_ = 0;
       other.size_ = 0;
     }
-
-    return* this;
+    return *this;
   }
 
 }
