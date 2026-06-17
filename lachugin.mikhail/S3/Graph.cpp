@@ -13,14 +13,13 @@ namespace lachugin {
     return edges_.has(edge);
   }
 
-  void lachugin::Graph::bind(
+  void Graph::bind(
     const std::string& from,
     const std::string& to,
     size_t weight)
   {
     addVertex(from);
     addVertex(to);
-
     Edge edge;
     edge.from = from;
     edge.to = to;
@@ -32,9 +31,9 @@ namespace lachugin {
       edges_.add(edge, weights);
       return;
     }
-
     edges_.get(edge).pushBack(weight);
   }
+
   void Graph::cut(const std::string& from,const std::string& to, size_t weight)
   {
     Edge edge;
@@ -81,5 +80,14 @@ namespace lachugin {
     }
   }
 
+  const List< std::string >& Graph::getVertexes() const
+  {
+    return vertexes_;
+  }
+
+  size_t Graph::vertexesCount() const
+  {
+    return vertexes_.size();
+  }
 
 }
