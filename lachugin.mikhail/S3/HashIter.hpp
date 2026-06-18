@@ -10,8 +10,8 @@ namespace lachugin
   template< class Key, class Value, class Hash, class Equal >
   class HashIter
   {
-    friend class HashTable< Key, Value, Hash, Equal >;
   public:
+    friend class HashTable< Key, Value, Hash, Equal >;
     HashItem< Key, Value >& operator*() const;
     HashItem< Key, Value >* operator->() const;
 

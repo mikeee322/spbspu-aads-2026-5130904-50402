@@ -9,13 +9,20 @@
 namespace lachugin
 {
   template< class Key, class Value, class Hash, class Equal >
+  class HashIter;
+
+  template< class Key, class Value, class Hash, class Equal >
+  class HashConstIter;
+
+  template< class Key, class Value, class Hash, class Equal >
   class HashTable
   {
-    friend class HashIter< Key, Value, Hash, Equal >;
     using value_type = std::pair< Key, Value >;
     using it = HashIter< Key, Value, Hash, Equal >;
     using ConstIt = HashConstIter< Key, Value, Hash, Equal >;
   public:
+    friend class HashIter< Key, Value, Hash, Equal >;
+    friend class HashConstIter< Key, Value, Hash, Equal >;
     HashTable(size_t bucketCount, size_t bucketCapacity, size_t spareCapacity = 10);
     ~HashTable();
     HashTable(const HashTable& other);

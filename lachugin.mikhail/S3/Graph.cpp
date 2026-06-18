@@ -90,4 +90,33 @@ namespace lachugin {
     return vertexes_.size();
   }
 
+  List< Edge > Graph::outbound(const std::string& vertex) const
+  {
+    List< Edge > result;
+    for (auto it = edges_.begin(); it != edges_.end(); ++it)
+    {
+      if (it->key.from == vertex)
+      {
+        result.pushBack(it->key);
+      }
+    }
+
+    return result;
+  }
+
+  List< Edge > Graph::inbound(const std::string& vertex) const
+  {
+    List< Edge > result;
+    for (auto it = edges_.begin(); it != edges_.end(); ++it)
+    {
+      if (it->key.to == vertex)
+      {
+        result.pushBack(it->key);
+      }
+    }
+
+    return result;
+  }
+
+
 }
