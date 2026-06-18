@@ -65,10 +65,10 @@ namespace lachugin
   HashTable< Key, Value, Hash, Equal >::HashTable(size_t bucketCount, size_t bucketCapacity,
     size_t spareCapacity):
   data_(nullptr),
+  size_(0),
   bucketCount_(bucketCount),
   bucketCapacity_(bucketCapacity),
   spareCapacity_(spareCapacity),
-  size_(0),
   hasher_(Hash()),
   equal_(Equal())
   {
@@ -102,9 +102,7 @@ namespace lachugin
   }
 
   template< class Key, class Value, class Hash, class Equal >
-  void HashTable< Key, Value, Hash, Equal >::add(
-    const Key& key,
-    const Value& value)
+  void HashTable< Key, Value, Hash, Equal >::add(const Key& key, const Value& value)
   {
     if (has(key))
     {
@@ -277,13 +275,12 @@ namespace lachugin
   }
 
   template< class Key, class Value, class Hash, class Equal >
-  HashTable< Key, Value, Hash, Equal >::HashTable(
-    const HashTable& other):
+  HashTable< Key, Value, Hash, Equal >::HashTable(const HashTable& other):
   data_(nullptr),
+  size_(other.size_),
   bucketCount_(other.bucketCount_),
   bucketCapacity_(other.bucketCapacity_),
   spareCapacity_(other.spareCapacity_),
-  size_(other.size_),
   hasher_(other.hasher_),
   equal_(other.equal_)
   {
@@ -296,13 +293,12 @@ namespace lachugin
   }
 
   template< class Key, class Value, class Hash, class Equal >
-  HashTable< Key, Value, Hash, Equal >::HashTable(
-    HashTable&& other) noexcept:
+  HashTable< Key, Value, Hash, Equal >::HashTable(HashTable&& other) noexcept:
   data_(other.data_),
+  size_(other.size_),
   bucketCount_(other.bucketCount_),
   bucketCapacity_(other.bucketCapacity_),
   spareCapacity_(other.spareCapacity_),
-  size_(other.size_),
   hasher_(std::move(other.hasher_)),
   equal_(std::move(other.equal_))
   {
@@ -314,8 +310,7 @@ namespace lachugin
   }
 
   template< class Key, class Value, class Hash, class Equal >
-  void HashTable< Key, Value, Hash, Equal >::swap(
-    HashTable& other) noexcept
+  void HashTable< Key, Value, Hash, Equal >::swap(HashTable& other) noexcept
   {
     std::swap(data_, other.data_);
     std::swap(bucketCount_, other.bucketCount_);
@@ -339,23 +334,22 @@ namespace lachugin
   }
 
   template< class Key, class Value, class Hash, class Equal >
-  HashTable<Key, Value, Hash, Equal>&
-    HashTable<Key, Value, Hash, Equal>::operator=(
-    HashTable&& other) noexcept
+  HashTable<Key, Value, Hash, Equal>& HashTable<Key, Value, Hash, Equal>::operator=(
+  HashTable&& other) noexcept
   {
     if (this != &other)
     {
       delete[] data_;
       data_ = other.data_;
+      size_ = other.size_;
       bucketCount_ = other.bucketCount_;
       bucketCapacity_ = other.bucketCapacity_;
       spareCapacity_ = other.spareCapacity_;
-      size_ = other.size_;
       other.data_ = nullptr;
+      other.size_ = 0;
       other.bucketCount_ = 0;
       other.bucketCapacity_ = 0;
       other.spareCapacity_ = 0;
-      other.size_ = 0;
     }
     return *this;
   }
@@ -363,45 +357,25 @@ namespace lachugin
   template< class Key, class Value, class Hash, class Equal >
   HashIter< Key, Value, Hash, Equal > HashTable< Key, Value, Hash, Equal >::begin()
   {
-    return HashIter<
-        Key,
-        Value,
-        Hash,
-        Equal
-    >(this, 0);
+    return HashIter< Key, Value, Hash, Equal >(this, 0);
   }
 
   template< class Key, class Value, class Hash, class Equal >
   HashIter< Key, Value, Hash, Equal > HashTable< Key, Value, Hash, Equal >::end()
   {
-    return HashIter<
-        Key,
-        Value,
-        Hash,
-        Equal
-    >(this,bucketCount_ * bucketCapacity_ + spareCapacity_);
+    return HashIter< Key, Value, Hash, Equal >(this,bucketCount_ * bucketCapacity_ + spareCapacity_);
   }
 
   template< class Key, class Value, class Hash, class Equal >
   HashConstIter< Key, Value, Hash, Equal > HashTable< Key, Value, Hash, Equal >::begin() const
   {
-    return HashConstIter<
-        Key,
-        Value,
-        Hash,
-        Equal
-    >(this, 0);
+    return HashConstIter< Key, Value, Hash, Equal >(this, 0);
   }
 
   template< class Key, class Value, class Hash, class Equal >
   HashConstIter< Key, Value, Hash, Equal > HashTable< Key, Value, Hash, Equal >::end() const
   {
-    return HashConstIter<
-        Key,
-        Value,
-        Hash,
-        Equal
-    >(this,bucketCount_ * bucketCapacity_ + spareCapacity_);
+    return HashConstIter< Key, Value, Hash, Equal >(this,bucketCount_ * bucketCapacity_ + spareCapacity_);
   }
 }
 #endif

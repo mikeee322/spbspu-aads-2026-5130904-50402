@@ -2,6 +2,7 @@
 #define HASHITER_HPP
 
 #include <cstddef>
+#include "HashItem.hpp"
 namespace lachugin
 {
   template< class Key, class Value, class Hash, class Equal >
