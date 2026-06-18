@@ -13,17 +13,13 @@ namespace lachugin {
     return edges_.has(edge);
   }
 
-  void Graph::bind(
-    const std::string& from,
-    const std::string& to,
-    size_t weight)
+  void Graph::bind(const std::string& from, const std::string& to, size_t weight)
   {
     addVertex(from);
     addVertex(to);
     Edge edge;
     edge.from = from;
     edge.to = to;
-
     if (!edges_.has(edge))
     {
       Weights weights;

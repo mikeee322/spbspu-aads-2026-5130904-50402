@@ -47,6 +47,58 @@ namespace lachugin
     }
   }
 
+  void cmdInbound(std::istream& in, std::ostream& out, GraphStorage& storage)
+  {
+    std::string graphName;
+    std::string vertex;
+    in >> graphName >> vertex;
+
+    const Graph& graph = storage.getGraph(graphName);
+    const auto& edges = graph.getEdges();
+    for (auto it = edges.begin(); it != edges.end(); ++it)
+    {
+      if (it->key.to == vertex)
+      {
+        out << it->key.from;
+        for (auto w = it->value.begin(); w != it->value.end(); ++w)
+        {
+          out << ' ' << *w;
+        }
+        out << '\n';
+      }
+    }
+  }
+
+  void cmdCreate(std::istream& in, std::ostream&, GraphStorage& storage)
+  {
+    std::string name;
+    in >> name;
+    Graph gr;
+    storage.addGraph(name, gr);
+  }
+
+  void cmdBind(std::istream& in, std::ostream&, GraphStorage& storage)
+  {
+    std::string name;
+    std::string from;
+    std::string to;
+    size_t weight = 0;
+    in >> name >> from >> to >> weight;
+
+    storage.getGraph(name).bind(from, to, weight);
+  }
+
+  void cmdCut(std::istream& in, std::ostream&, GraphStorage& storage)
+  {
+    std::string name;
+    std::string from;
+    std::string to;
+    size_t weight = 0;
+    in >> name >> from >> to >> weight;
+
+    storage.getGraph(name).cut(from, to, weight);
+  }
+
 
 
 }

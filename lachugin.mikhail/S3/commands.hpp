@@ -10,6 +10,10 @@ namespace lachugin
   void cmdGraphs(std::istream&, std::ostream&, GraphStorage&);
   void cmdVertexes(std::istream&, std::ostream&, GraphStorage&);
   void cmdOutbound(std::istream& in, std::ostream& out, GraphStorage& storage);
+  void cmdInbound(std::istream& in, std::ostream& out, GraphStorage& storage);
+  void cmdCreate(std::istream& in, std::ostream& out, GraphStorage& storage);
+  void cmdBind(std::istream& in, std::ostream&, GraphStorage& storage);
+  void cmdCut(std::istream& in, std::ostream&, GraphStorage& storage);
 }
 
 #endif

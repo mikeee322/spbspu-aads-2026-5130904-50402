@@ -26,6 +26,11 @@ int main(int argc, char* argv[])
   commands.add("graphs", lachugin::cmdGraphs);
   commands.add("vertexes", lachugin::cmdVertexes);
   commands.add("outbound", lachugin::cmdOutbound);
+  commands.add("inbound", lachugin::cmdInbound);
+  commands.add("create", lachugin::cmdCreate);
+  commands.add("bind", lachugin::cmdBind);
+  commands.add("cut", lachugin::cmdCut);
+
   std::string cmd;
   while (std::cin >> cmd)
   {
