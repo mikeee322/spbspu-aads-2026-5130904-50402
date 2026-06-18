@@ -1,40 +1,21 @@
 #include "commands.hpp"
 #include "Graph.hpp"
+#include "sorts.hpp"
 
 namespace lachugin
 {
-  template< class T >
-  void sortList(List< T >& list)
-  {
-    if (list.size() < 2)
-    {
-      return;
-    }
-    for (auto it1 = list.begin(); it1 != list.end(); ++it1)
-    {
-      auto minIt = it1;
-      for (auto it2 = it1; it2 != list.end(); ++it2)
-      {
-        if (*it2 < *minIt)
-        {
-          minIt = it2;
-        }
-      }
-      if (minIt != it1)
-      {
-        T tmp = *it1;
-        *it1 = *minIt;
-        *minIt = tmp;
-      }
-    }
-  }
-
   void cmdGraphs(std::istream&, std::ostream& out, GraphStorage& storage)
   {
-    auto& graphs = storage.getGraphs();
+    List< std::string > names;
+    const auto& graphs = storage.getGraphs();
     for (auto it = graphs.begin(); it != graphs.end(); ++it)
     {
-      out << it->key << '\n';
+      names.pushBack(it->key);
+    }
+    sortList(names);
+    for (auto it = names.begin(); it != names.end(); ++it)
+    {
+      out << *it << '\n';
     }
   }
 
@@ -42,8 +23,9 @@ namespace lachugin
   {
     std::string graphName;
     in >> graphName;
-    Graph& graph = storage.getGraph(graphName);
-    const List< std::string >& verts = graph.getVertexes();
+    const Graph& graph = storage.getGraph(graphName);
+    List< std::string > verts = graph.getVertexes();
+    sortList(verts);
 
     for (auto it = verts.begin(); it != verts.end(); ++it)
     {
@@ -53,45 +35,56 @@ namespace lachugin
 
   void cmdOutbound(std::istream& in, std::ostream& out, GraphStorage& storage)
   {
-    std::string graphName;
+    std::string name;
     std::string vertex;
-    in >> graphName >> vertex;
+    in >> name >> vertex;
+    const Graph& graph = storage.getGraph(name);
 
-    const Graph& graph = storage.getGraph(graphName);
-    const auto& edges = graph.getEdges();
+    if (!graph.hasVertex(vertex))
+    {
+      throw std::logic_error("no vertex");
+    }
+
+    List< Edge > edges = graph.outbound(vertex);
+    sortEdgesByTo(edges);
     for (auto it = edges.begin(); it != edges.end(); ++it)
     {
-      if (it->key.from == vertex)
+      out << (*it).to;
+      List< size_t > weights = graph.getEdges().get(*it);
+      sortList(weights);
+
+      for (auto w = weights.begin(); w != weights.end(); ++w)
       {
-        out << it->key.to;
-        for (auto w = it->value.begin(); w != it->value.end(); ++w)
-        {
-          out << ' ' << *w;
-        }
-        out << '\n';
+        out << ' ' << *w;
       }
+      out << '\n';
     }
   }
 
   void cmdInbound(std::istream& in, std::ostream& out, GraphStorage& storage)
   {
-    std::string graphName;
+    std::string name;
     std::string vertex;
-    in >> graphName >> vertex;
+    in >> name >> vertex;
+    const Graph& graph = storage.getGraph(name);
+    if (!graph.hasVertex(vertex))
+    {
+      throw std::logic_error("no vertex");
+    }
 
-    const Graph& graph = storage.getGraph(graphName);
-    const auto& edges = graph.getEdges();
+    List< Edge > edges = graph.inbound(vertex);
+    sortEdgesByFrom(edges);
     for (auto it = edges.begin(); it != edges.end(); ++it)
     {
-      if (it->key.to == vertex)
+      out << (*it).from;
+      List< size_t > weights = graph.getEdges().get(*it);
+      sortList(weights);
+
+      for (auto w = weights.begin(); w != weights.end(); ++w)
       {
-        out << it->key.from;
-        for (auto w = it->value.begin(); w != it->value.end(); ++w)
-        {
-          out << ' ' << *w;
-        }
-        out << '\n';
+        out << ' ' << *w;
       }
+      out << '\n';
     }
   }
 
@@ -99,8 +92,12 @@ namespace lachugin
   {
     std::string name;
     in >> name;
-    Graph gr;
-    storage.addGraph(name, gr);
+    if (storage.hasGraph(name))
+    {
+      throw std::logic_error("Graph exists");
+    }
+    Graph graph;
+    storage.addGraph(name, graph);
   }
 
   void cmdBind(std::istream& in, std::ostream&, GraphStorage& storage)

@@ -35,6 +35,10 @@ namespace lachugin {
     Edge edge;
     edge.from = from;
     edge.to = to;
+    if (!hasVertex(from) || !hasVertex(to))
+    {
+      throw std::logic_error("Vertex not found");
+    }
 
     if (!edges_.has(edge))
     {
