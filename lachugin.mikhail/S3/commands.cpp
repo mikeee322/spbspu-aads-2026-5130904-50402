@@ -166,5 +166,62 @@ namespace lachugin
     storage.addGraph(newName, result);
   }
 
+  void cmdExtract(std::istream& in, std::ostream&, GraphStorage& storage)
+  {
+    std::string newName;
+    std::string sourceName;
+    size_t count = 0;
+
+    in >> newName >> sourceName >> count;
+    if (storage.hasGraph(newName))
+    {
+      throw std::logic_error("Graph exists");
+    }
+
+    const Graph& source = storage.getGraph(sourceName);
+    List< std::string > selected;
+    for (size_t i = 0; i < count; ++i)
+    {
+      std::string vertex;
+      in >> vertex;
+      if (!source.hasVertex(vertex))
+      {
+        throw std::logic_error("Vertex not found");
+      }
+      selected.pushBack(vertex);
+    }
+    Graph result;
+    for (auto it = selected.begin(); it != selected.end(); ++it)
+    {
+      result.addVertex(*it);
+    }
+    const auto& edges = source.getEdges();
+    for (auto it = edges.begin(); it != edges.end(); ++it)
+    {
+      bool fromFound = false;
+      bool toFound = false;
+      for (auto v = selected.begin(); v != selected.end(); ++v)
+      {
+        if (*v == it->key.from)
+        {
+          fromFound = true;
+        }
+        if (*v == it->key.to)
+        {
+          toFound = true;
+        }
+      }
+
+      if (fromFound && toFound)
+      {
+        for (auto w = it->value.begin(); w != it->value.end(); ++w)
+        {
+          result.bind(it->key.from, it->key.to, *w);
+        }
+      }
+    }
+    storage.addGraph(newName, result);
+  }
+
 
 }

@@ -31,6 +31,7 @@ int main(int argc, char* argv[])
   commands.add("bind", lachugin::cmdBind);
   commands.add("cut", lachugin::cmdCut);
   commands.add("merge", lachugin::cmdMerge);
+  commands.add("extract", lachugin::cmdExtract);
   std::string cmd;
   while (std::cin >> cmd)
   {
