@@ -118,5 +118,9 @@ namespace lachugin {
     return result;
   }
 
+  const HashTable<Edge, Graph::Weights, EdgeHash, EdgeEqual>& Graph::getEdges() const
+  {
+    return edges_;
+  }
 
 }
