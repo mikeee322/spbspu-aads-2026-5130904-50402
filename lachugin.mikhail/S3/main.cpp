@@ -21,9 +21,11 @@ int main(int argc, char* argv[])
   }
   lachugin::GraphStorage storage;
   lachugin::loadGraphs(input, storage);
-  using Cmd = void (*)(std::istream&, std::ostream&, lachugin::GraphStorage&);
-  lachugin::HashTable< std::string, Cmd, std::hash<std::string>, std::equal_to<std::string> > commands(31, 4);
+  using Cmd = void(*)(std::istream&, std::ostream&, lachugin::GraphStorage&);
+  lachugin::HashTable< std::string, Cmd, std::hash< std::string >, std::equal_to< std::string > > commands(31, 4);
   commands.add("graphs", lachugin::cmdGraphs);
+  commands.add("vertexes", lachugin::cmdVertexes);
+  commands.add("outbound", lachugin::cmdOutbound);
   std::string cmd;
   while (std::cin >> cmd)
   {
