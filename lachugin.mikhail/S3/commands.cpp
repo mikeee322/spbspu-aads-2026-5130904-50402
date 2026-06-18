@@ -122,6 +122,49 @@ namespace lachugin
     storage.getGraph(name).cut(from, to, weight);
   }
 
+  void cmdMerge(std::istream& in, std::ostream&, GraphStorage& storage)
+  {
+    std::string newName;
+    std::string g1Name;
+    std::string g2Name;
+    in >> newName >> g1Name >> g2Name;
+
+    if (storage.hasGraph(newName))
+    {
+      throw std::logic_error("Graph exists");
+    }
+
+    const Graph& g1 = storage.getGraph(g1Name);
+    const Graph& g2 = storage.getGraph(g2Name);
+    Graph result;
+    for (auto it = g1.getVertexes().begin(); it != g1.getVertexes().end(); ++it)
+    {
+      result.addVertex(*it);
+    }
+
+    for (auto it = g2.getVertexes().begin(); it != g2.getVertexes().end(); ++it)
+    {
+      result.addVertex(*it);
+    }
+    const auto& edges1 = g1.getEdges();
+
+    for (auto it = edges1.begin(); it != edges1.end(); ++it)
+    {
+      for (auto w = it->value.begin(); w != it->value.end(); ++w)
+      {
+        result.bind(it->key.from, it->key.to, *w);
+      }
+    }
+    const auto& edges2 = g2.getEdges();
+    for (auto it = edges2.begin(); it != edges2.end();++it)
+    {
+      for (auto w = it->value.begin(); w != it->value.end(); ++w)
+      {
+        result.bind(it->key.from, it->key.to, *w);
+      }
+    }
+    storage.addGraph(newName, result);
+  }
 
 
 }

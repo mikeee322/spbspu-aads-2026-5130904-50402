@@ -14,6 +14,7 @@ namespace lachugin
   void cmdCreate(std::istream& in, std::ostream& out, GraphStorage& storage);
   void cmdBind(std::istream& in, std::ostream&, GraphStorage& storage);
   void cmdCut(std::istream& in, std::ostream&, GraphStorage& storage);
+  void cmdMerge(std::istream& in, std::ostream&, GraphStorage& storage);
 }
 
 #endif

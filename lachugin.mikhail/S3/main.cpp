@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
   commands.add("create", lachugin::cmdCreate);
   commands.add("bind", lachugin::cmdBind);
   commands.add("cut", lachugin::cmdCut);
-
+  commands.add("merge", lachugin::cmdMerge);
   std::string cmd;
   while (std::cin >> cmd)
   {
