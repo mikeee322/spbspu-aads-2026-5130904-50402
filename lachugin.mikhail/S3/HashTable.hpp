@@ -4,12 +4,17 @@
 #include "../common/itters.hpp"
 #include "../common/node.hpp"
 #include <stdexcept>
+#include "HashItem.hpp"
 #include "HashIter.hpp"
 namespace lachugin
 {
   template< class Key, class Value, class Hash, class Equal >
-  class HashTable {
+  class HashTable
+  {
+    friend class HashIter< Key, Value, Hash, Equal >;
     using value_type = std::pair< Key, Value >;
+    using it = HashIter< Key, Value, Hash, Equal >;
+    using ConstIt = HashConstIter< Key, Value, Hash, Equal >;
   public:
     HashTable(size_t bucketCount, size_t bucketCapacity, size_t spareCapacity = 10);
     ~HashTable();
@@ -17,6 +22,11 @@ namespace lachugin
     HashTable& operator=(const HashTable& other);
     HashTable(HashTable&& other) noexcept;
     HashTable& operator=(HashTable&& other) noexcept;
+
+    it begin();
+    it end();
+    ConstIt begin() const;
+    ConstIt end() const;
 
     void add(const Key& k, const Value& v);
     Value drop(const Key& k);
@@ -45,9 +55,7 @@ namespace lachugin
   };
 
   template< class Key, class Value, class Hash, class Equal >
-  HashTable< Key, Value, Hash, Equal >::HashTable(
-    size_t bucketCount,
-    size_t bucketCapacity,
+  HashTable< Key, Value, Hash, Equal >::HashTable(size_t bucketCount, size_t bucketCapacity,
     size_t spareCapacity):
   data_(nullptr),
   bucketCount_(bucketCount),
@@ -122,12 +130,10 @@ namespace lachugin
         data_[pos].key = key;
         data_[pos].value = value;
         data_[pos].occupied = true;
-
         ++size_;
         return;
       }
     }
-
     throw std::overflow_error("Hash table overflow");
   }
 
@@ -135,15 +141,11 @@ namespace lachugin
   bool HashTable< Key, Value, Hash, Equal >::has(const Key& key) const
   {
     size_t bucket = hasher_(key) % bucketCount_;
-
     size_t first = bucketFirst(bucket);
-
     for (size_t i = 0; i < bucketCapacity_; ++i)
     {
       size_t pos = first + i;
-
-      if (data_[pos].occupied &&
-          equal_(data_[pos].key, key))
+      if (data_[pos].occupied && equal_(data_[pos].key, key))
       {
         return true;
       }
@@ -152,9 +154,7 @@ namespace lachugin
     for (size_t i = 0; i < spareCapacity_; ++i)
     {
       size_t pos = overflow + i;
-
-      if (data_[pos].occupied &&
-          equal_(data_[pos].key, key))
+      if (data_[pos].occupied && equal_(data_[pos].key, key))
       {
         return true;
       }
@@ -170,9 +170,7 @@ namespace lachugin
     for (size_t i = 0; i < bucketCapacity_; ++i)
     {
       size_t pos = first + i;
-
-      if (data_[pos].occupied &&
-          equal_(data_[pos].key, key))
+      if (data_[pos].occupied && equal_(data_[pos].key, key))
       {
         Value result = data_[pos].value;
         data_[pos].occupied = false;
@@ -184,8 +182,7 @@ namespace lachugin
     for (size_t i = 0; i < spareCapacity_; ++i)
     {
       size_t pos = overflow + i;
-      if (data_[pos].occupied &&
-          equal_(data_[pos].key, key))
+      if (data_[pos].occupied && equal_(data_[pos].key, key))
       {
         Value result = data_[pos].value;
         data_[pos].occupied = false;
@@ -217,8 +214,7 @@ namespace lachugin
     {
       size_t pos = first + i;
 
-      if (data_[pos].occupied &&
-          equal_(data_[pos].key, key))
+      if (data_[pos].occupied && equal_(data_[pos].key, key))
       {
         return data_[pos].value;
       }
@@ -228,9 +224,7 @@ namespace lachugin
     for (size_t i = 0; i < spareCapacity_; ++i)
     {
       size_t pos = overflow + i;
-
-      if (data_[pos].occupied &&
-          equal_(data_[pos].key, key))
+      if (data_[pos].occupied && equal_(data_[pos].key, key))
       {
         return data_[pos].value;
       }
@@ -359,5 +353,48 @@ namespace lachugin
     return *this;
   }
 
+  template< class Key, class Value, class Hash, class Equal >
+  HashIter< Key, Value, Hash, Equal > HashTable< Key, Value, Hash, Equal >::begin()
+  {
+    return HashIter<
+        Key,
+        Value,
+        Hash,
+        Equal
+    >(this, 0);
+  }
+
+  template< class Key, class Value, class Hash, class Equal >
+  HashIter< Key, Value, Hash, Equal > HashTable< Key, Value, Hash, Equal >::end()
+  {
+    return HashIter<
+        Key,
+        Value,
+        Hash,
+        Equal
+    >(this,bucketCount_ * bucketCapacity_ + spareCapacity_);
+  }
+
+  template< class Key, class Value, class Hash, class Equal >
+  HashConstIter< Key, Value, Hash, Equal > HashTable< Key, Value, Hash, Equal >::begin() const
+  {
+    return HashConstIter<
+        Key,
+        Value,
+        Hash,
+        Equal
+    >(this, 0);
+  }
+
+  template< class Key, class Value, class Hash, class Equal >
+  HashConstIter< Key, Value, Hash, Equal > HashTable< Key, Value, Hash, Equal >::end() const
+  {
+    return HashConstIter<
+        Key,
+        Value,
+        Hash,
+        Equal
+    >(this,bucketCount_ * bucketCapacity_ + spareCapacity_);
+  }
 }
 #endif
