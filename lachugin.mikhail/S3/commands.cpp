@@ -108,14 +108,17 @@ namespace lachugin
     size_t count = 0;
     if (!(in >> name))
     {
+      in.clear();
       throw std::logic_error("Bad create");
     }
     if (!(in >> count))
     {
+      in.clear();
       throw std::logic_error("Bad create");
     }
     if (storage.hasGraph(name))
     {
+      in.clear();
       throw std::logic_error("Graph exists");
     }
     Graph graph;
