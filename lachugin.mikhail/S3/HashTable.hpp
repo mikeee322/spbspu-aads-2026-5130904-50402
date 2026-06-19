@@ -77,10 +77,7 @@ namespace lachugin
       throw std::invalid_argument("Invalid table size");
     }
 
-    data_ = new HashItem< Key, Value >
-    [
-      bucketCount_ * bucketCapacity_ + spareCapacity_
-    ];
+    data_ = new HashItem< Key, Value >[bucketCount_ * bucketCapacity_ + spareCapacity_];
   }
 
   template< class Key, class Value, class Hash, class Equal >
