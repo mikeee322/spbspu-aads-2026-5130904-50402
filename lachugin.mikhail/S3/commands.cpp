@@ -12,6 +12,11 @@ namespace lachugin
     {
       names.pushBack(it->key);
     }
+    if (names.empty())
+    {
+      out << '\n';
+      return;
+    }
     sortList(names);
     for (auto it = names.begin(); it != names.end(); ++it)
     {
@@ -25,8 +30,12 @@ namespace lachugin
     in >> graphName;
     const Graph& graph = storage.getGraph(graphName);
     List< std::string > verts = graph.getVertexes();
+    if (verts.empty())
+    {
+      out << '\n';
+      return;
+    }
     sortList(verts);
-
     for (auto it = verts.begin(); it != verts.end(); ++it)
     {
       out << *it << '\n';
@@ -92,7 +101,10 @@ namespace lachugin
   {
     std::string name;
     size_t count = 0;
-    in >> name >> count;
+    if (!(in >> name >> count))
+    {
+      throw std::logic_error("Bad create");
+    }
     if (storage.hasGraph(name))
     {
       throw std::logic_error("Graph exists");
@@ -101,7 +113,10 @@ namespace lachugin
     for (size_t i = 0; i < count; ++i)
     {
       std::string vertex;
-      in >> vertex;
+      if (!(in >> vertex))
+      {
+        throw std::logic_error("Bad create");
+      }
       graph.addVertex(vertex);
     }
     storage.addGraph(name, graph);
