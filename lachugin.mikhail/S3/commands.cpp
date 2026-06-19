@@ -106,7 +106,11 @@ namespace lachugin
   {
     std::string name;
     size_t count = 0;
-    if (!(in >> name >> count))
+    if (!(in >> name))
+    {
+      throw std::logic_error("Bad create");
+    }
+    if (!(in >> count))
     {
       throw std::logic_error("Bad create");
     }
