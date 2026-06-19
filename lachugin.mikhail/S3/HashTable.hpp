@@ -49,6 +49,8 @@ namespace lachugin
 
     size_t bucketFirst(size_t bucket) const noexcept;
     size_t overflowFirst() const noexcept;
+
+    void rehash(size_t newBucketCount);
   private:
     HashItem< Key, Value >* data_;
     size_t size_;
@@ -136,7 +138,8 @@ namespace lachugin
         return;
       }
     }
-    throw std::overflow_error("Hash table overflow");
+    rehash(bucketCount_ * 2);
+    add(key, value);
   }
 
   template< class Key, class Value, class Hash, class Equal >
@@ -373,6 +376,17 @@ namespace lachugin
   HashConstIter< Key, Value, Hash, Equal > HashTable< Key, Value, Hash, Equal >::end() const
   {
     return HashConstIter< Key, Value, Hash, Equal >(this,bucketCount_ * bucketCapacity_ + spareCapacity_);
+  }
+
+  template< class Key, class Value, class Hash, class Equal >
+  void HashTable< Key, Value, Hash, Equal >::rehash(size_t newBucketCount)
+  {
+    HashTable tmp(newBucketCount, bucketCapacity_, spareCapacity_ * 2);
+    for (auto it = begin(); it != end(); ++it)
+    {
+      tmp.add(it->key, it->value);
+    }
+    swap(tmp);
   }
 }
 #endif
