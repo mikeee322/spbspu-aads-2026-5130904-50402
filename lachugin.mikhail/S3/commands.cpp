@@ -91,12 +91,19 @@ namespace lachugin
   void cmdCreate(std::istream& in, std::ostream&, GraphStorage& storage)
   {
     std::string name;
-    in >> name;
+    size_t count = 0;
+    in >> name >> count;
     if (storage.hasGraph(name))
     {
       throw std::logic_error("Graph exists");
     }
     Graph graph;
+    for (size_t i = 0; i < count; ++i)
+    {
+      std::string vertex;
+      in >> vertex;
+      graph.addVertex(vertex);
+    }
     storage.addGraph(name, graph);
   }
 
