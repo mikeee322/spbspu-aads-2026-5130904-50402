@@ -55,6 +55,11 @@ namespace lachugin
     }
 
     List< Edge > edges = graph.outbound(vertex);
+    if (edges.empty())
+    {
+      out << '\n';
+      return;
+    }
     sortEdgesByTo(edges);
     for (auto it = edges.begin(); it != edges.end(); ++it)
     {
