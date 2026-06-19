@@ -36,6 +36,8 @@ namespace lachugin
     void popEnd();
     Node<T>* getTail();
 
+    void erase(LIter< T >);
+
   };
 
   template < class T >
@@ -74,28 +76,17 @@ namespace lachugin
   template < class T >
   List< T >& List< T >::operator=(const List< T >& other)
   {
-    if (this != other)
+    if (this != &other)
     {
       clear();
-      auto itO = other.begin();
-      auto itT = this->begin();
-
-      while (itO != other.end())
+      for (auto it = other.begin(); it != other.end(); ++it)
       {
-        Node< T >* n = nullptr;
-        if (itT == fake)
-        {
-          n = this->add(*itO);
-        }
-        else
-        {
-          n = this->addNext(*itO, n);
-        }
-        ++itO;
+        pushBack(*it);
       }
     }
     return* this;
   }
+
 
   template < class T >
   Node< T >* List< T >::add(const T& val)
@@ -273,5 +264,25 @@ namespace lachugin
     it->next = n;
     size_++;
   }
+
+  template< class T >
+  void List< T >::erase(LIter< T > pos)
+  {
+    if (pos == end()) {
+      return;
+    }
+    Node< T >* prev = fake;
+    while (prev->next != pos.curr)
+    {
+      prev = prev->next;
+    }
+    Node< T >* victim = pos.curr;
+
+    prev->next = victim->next;
+
+    delete victim;
+    --size_;
+  }
+
 }
 #endif
