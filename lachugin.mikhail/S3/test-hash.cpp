@@ -1,7 +1,9 @@
+#define BOOST_TEST_MODULE S3Tests
+#include <boost/test/included/unit_test.hpp>
+
 #include "HashTable.hpp"
 #include "Graph.hpp"
 #include "GraphStorage.hpp"
-#include <boost/test/unit_test.hpp>
 
 using namespace lachugin;
 
