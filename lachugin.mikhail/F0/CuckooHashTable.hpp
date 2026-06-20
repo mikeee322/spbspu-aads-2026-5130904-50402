@@ -248,7 +248,45 @@ namespace lachugin
     return *this;
   }
 
-
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  void CuckooHashTable< Key, Value, Hash1, Hash2, Equal >::insertWithoutCheck(const Key& key, const Value& value)
+  {
+    value_type current(key, value);
+    bool firstTable = true;
+    size_t kickCount = 0;
+    while (kickCount < capacity_)
+    {
+      if (firstTable)
+      {
+        size_t pos = hashPos1(current.first);
+        if (!table1_[pos].occupied)
+        {
+          table1_[pos].data = current;
+          table1_[pos].occupied = true;
+          ++size_;
+          return;
+        }
+        std::swap(current, table1_[pos].data);
+        firstTable = false;
+      }
+      else
+      {
+        size_t pos = hashPos2(current.first);
+        if (!table2_[pos].occupied)
+        {
+          table2_[pos].data = current;
+          table2_[pos].occupied = true;
+          ++size_;
+          return;
+        }
+        std::swap(current, table2_[pos].data);
+        firstTable = true;
+      }
+      ++kickCount;
+    }
+    rehash(capacity_ * 2 + 1);
+    insertWithoutCheck(current.first, current.second);
+  }
 
 
 }
