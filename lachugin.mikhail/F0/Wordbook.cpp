@@ -15,5 +15,17 @@ namespace lachugin
     words_.add(eng, Word(rus));
   }
 
+  void Wordbook::removeWord(const std::string& eng)
+  {
+    if (!words_.has(eng))
+    {
+      throw std::logic_error("Word does not exist");
+    }
+
+    words_.drop(eng);
+  }
+
+
+
 
 }
