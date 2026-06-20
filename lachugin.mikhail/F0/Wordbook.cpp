@@ -25,6 +25,15 @@ namespace lachugin
     words_.drop(eng);
   }
 
+  void Wordbook::addAnotherTranslation(const std::string& eng, const std::string& rus)
+  {
+    if (!words_.has(eng))
+    {
+      throw std::logic_error("Word does not exist");
+    }
+
+    words_.get(eng).addTranslation(rus);
+  }
 
 
 
