@@ -347,6 +347,28 @@ namespace lachugin
     insertWithoutCheck(key, value);
   }
 
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  Value CuckooHashTable< Key, Value, Hash1, Hash2, Equal >::drop(const Key& key)
+  {
+    size_t pos1 = hashPos1(key);
+    if (table1_[pos1].occupied && equal_(table1_[pos1].data.first, key))
+    {
+      Value result = table1_[pos1].data.second;
+      table1_[pos1].occupied = false;
+      --size_;
+      return result;
+    }
+    size_t pos2 = hashPos2(key);
+    if (table2_[pos2].occupied && equal_(table2_[pos2].data.first, key))
+    {
+      Value result = table2_[pos2].data.second;
+      table2_[pos2].occupied = false;
+      --size_;
+      return result;
+    }
+    throw std::out_of_range("Key does not exist");
+  }
+
 
 
 }
