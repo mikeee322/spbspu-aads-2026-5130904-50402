@@ -110,6 +110,15 @@ namespace lachugin
     }
   }
 
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  CuckooIter< Key, Value, Hash1, Hash2, Equal >&
+    CuckooIter<Key, Value, Hash1, Hash2, Equal>::operator++()
+  {
+    ++pos_;
+    skipEmpty();
+    return *this;
+  }
+
 
 
 

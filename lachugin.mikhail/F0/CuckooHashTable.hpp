@@ -36,12 +36,13 @@ namespace lachugin
   class CuckooHashTable
   {
   public:
-    using it = CuckooIter< Key, Value, Hash1, Hash2, Equal >;
-    using constIt = CuckooConstIter< Key, Value, Hash1, Hash2, Equal >;
     using value_type = std::pair< Key, Value >;
-    CuckooHashTable(size_t capacity = 17);
+    friend class CuckooIter< Key, Value, Hash1, Hash2, Equal >;
+    friend class CuckooConstIter< Key, Value, Hash1, Hash2, Equal >;
 
+    CuckooHashTable(size_t capacity = 17);
     ~CuckooHashTable();
+
     CuckooHashTable(const CuckooHashTable&);
     CuckooHashTable& operator=(const CuckooHashTable&);
     CuckooHashTable(CuckooHashTable&&) noexcept;
@@ -53,16 +54,14 @@ namespace lachugin
     Value& get(const Key&);
     const Value& get(const Key&) const;
     void clear();
-
     size_t size() const;
     bool empty() const;
     void rehash(size_t);
 
-    it begin();
-    it end();
-    constIt begin() const;
-    constIt end() const;
-
+    CuckooIter< Key, Value, Hash1, Hash2, Equal > begin();
+    CuckooIter< Key, Value, Hash1, Hash2, Equal > end();
+    CuckooConstIter< Key, Value, Hash1, Hash2, Equal > begin() const;
+    CuckooConstIter< Key, Value, Hash1, Hash2, Equal > end() const;
   private:
     size_t hashPos1(const Key&) const;
     size_t hashPos2(const Key&) const;
@@ -377,6 +376,23 @@ namespace lachugin
     }
     throw std::out_of_range("Key does not exist");
   }
+
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  CuckooIter< Key, Value, Hash1, Hash2, Equal >
+  CuckooHashTable< Key, Value, Hash1, Hash2, Equal >::begin()
+  {
+    CuckooIter< Key, Value, Hash1, Hash2, Equal > it(this,false,0);
+    it.skipEmpty();
+    return it;
+  }
+
+  template< class Key, class Value, class Hash1,class Hash2, class Equal >
+  CuckooIter< Key, Value, Hash1, Hash2, Equal >
+  CuckooHashTable< Key, Value, Hash1, Hash2, Equal >::end()
+  {
+    return CuckooIter< Key, Value, Hash1, Hash2, Equal >(this, true, capacity_);
+  }
+
 
 
 
