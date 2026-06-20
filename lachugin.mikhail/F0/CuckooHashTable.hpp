@@ -288,6 +288,55 @@ namespace lachugin
     insertWithoutCheck(current.first, current.second);
   }
 
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  void CuckooHashTable< Key, Value, Hash1, Hash2, Equal >::rehash(size_t newCapacity)
+  {
+    CuckooItem< Key, Value >* oldTable1 = table1_;
+    CuckooItem< Key, Value >* oldTable2 = table2_;
+    size_t oldCapacity = capacity_;
+
+
+    table1_ = new CuckooItem< Key, Value >[newCapacity];
+    table2_ = new CuckooItem< Key, Value >[newCapacity];
+    capacity_ = newCapacity;
+    size_t oldSize = size_;
+    size_ = 0;
+
+
+    try
+    {
+      for (size_t i = 0; i < oldCapacity; ++i)
+      {
+        if (oldTable1[i].occupied)
+        {
+          insertWithoutCheck(oldTable1[i].data.first, oldTable1[i].data.second);
+        }
+      }
+      for (size_t i = 0; i < oldCapacity; ++i)
+      {
+
+        if (oldTable2[i].occupied)
+        {
+          insertWithoutCheck(oldTable2[i].data.first, oldTable2[i].data.second);
+        }
+      }
+    }
+    catch (...)
+    {
+      delete[] table1_;
+      delete[] table2_;
+      table1_ = oldTable1;
+      table2_ = oldTable2;
+      capacity_ = oldCapacity;
+      size_ = oldSize;
+
+      throw;
+    }
+    delete[] oldTable1;
+    delete[] oldTable2;
+  }
+
+
 
 }
 
