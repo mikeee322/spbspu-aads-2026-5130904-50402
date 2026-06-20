@@ -27,10 +27,37 @@ namespace lachugin
     return false;
   }
 
-  List< std::string> & Word::getTranslations()
+  List< std::string >& Word::getTranslations()
   {
     return translations_;
   }
+
+  const List< std::string >& Word::getTranslations() const
+  {
+    return translations_;
+  }
+
+  void Word::setInterpretation(const std::string& interpretation)
+  {
+    interpretation_ = interpretation;
+  }
+
+  void Word::removeInterpretation()
+  {
+    interpretation_.clear();
+  }
+
+  bool Word::hasInterpretation() const
+  {
+    return !interpretation_.empty();
+  }
+
+  const std::string& Word::getInterpretation() const
+  {
+    return interpretation_;
+  }
+
+
 
 
 
