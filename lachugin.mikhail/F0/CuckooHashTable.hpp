@@ -140,6 +140,50 @@ namespace lachugin
     throw std::out_of_range("Key does not exist");
   }
 
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  const Value& CuckooHashTable< Key, Value, Hash1, Hash2, Equal >::get(const Key& key) const
+  {
+    size_t pos1 = hashPos1(key);
+    if (table1_[pos1].occupied && equal_(table1_[pos1].data.first, key))
+    {
+      return table1_[pos1].data.second;
+    }
+    size_t pos2 = hashPos2(key);
+    if (table2_[pos2].occupied && equal_(table2_[pos2].data.first, key))
+    {
+      return table2_[pos2].data.second;
+    }
+    throw std::out_of_range("Key does not exist");
+  }
+
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  void CuckooHashTable< Key, Value, Hash1, Hash2, Equal >::clear()
+  {
+    delete[] table1_;
+    delete[] table2_;
+    table1_ = new CuckooItem< Key, Value >[capacity_];
+    table2_ = new CuckooItem< Key, Value >[capacity_];
+    size_ = 0;
+  }
+
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  CuckooHashTable< Key, Value, Hash1, Hash2, Equal >::CuckooHashTable(const CuckooHashTable& other):
+  table1_(new CuckooItem<Key, Value>[other.capacity_]),
+  table2_(new CuckooItem<Key, Value>[other.capacity_]),
+  capacity_(other.capacity_),
+  size_(other.size_),
+  hash1_(other.hash1_),
+  hash2_(other.hash2_),
+  equal_(other.equal_)
+  {
+    for (size_t i = 0; i < capacity_; ++i)
+    {
+      table1_[i] = other.table1_[i];
+      table2_[i] = other.table2_[i];
+    }
+  }
+
+
 
 
 }
