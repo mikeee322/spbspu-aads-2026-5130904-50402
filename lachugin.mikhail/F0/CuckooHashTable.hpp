@@ -337,6 +337,17 @@ namespace lachugin
   }
 
 
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  void CuckooHashTable< Key, Value, Hash1, Hash2, Equal >::add(const Key& key, const Value& value)
+  {
+    if (has(key))
+    {
+      throw std::logic_error("Key already exists");
+    }
+    insertWithoutCheck(key, value);
+  }
+
+
 
 }
 
