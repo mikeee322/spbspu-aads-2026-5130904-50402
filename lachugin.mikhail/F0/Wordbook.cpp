@@ -73,5 +73,23 @@ namespace lachugin
     return words_.get(eng);
   }
 
+  const Word& Wordbook::getWord(const std::string& eng) const
+  {
+    if (!words_.has(eng))
+    {
+      throw std::logic_error("Word does not exist");
+    }
+    return words_.get(eng);
+  }
+
+  void Wordbook::removeInterpretation(const std::string& eng)
+  {
+    if (!words_.has(eng))
+    {
+      throw std::logic_error("Word does not exist");
+    }
+    words_.get(eng).removeInterpretation();
+  }
+
 
 }
