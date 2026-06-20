@@ -6,6 +6,9 @@
 namespace lachugin
 {
   template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  class CuckooHashTable;
+
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
   class CuckooIter
   {
   public:
@@ -31,12 +34,12 @@ namespace lachugin
     friend class CuckooHashTable<Key, Value, Hash1, Hash2, Equal>;
     std::pair< Key, Value >& operator*() const;
     std::pair< Key, Value> * operator->() const;
-    CuckooIter& operator++();
-    bool operator==(const CuckooIter&) const;
-    bool operator!=(const CuckooIter&) const;
+    CuckooConstIter& operator++();
+    bool operator==(const CuckooConstIter&) const;
+    bool operator!=(const CuckooConstIter&) const;
 
   private:
-    CuckooIter(CuckooHashTable< Key, Value, Hash1, Hash2, Equal >* table, bool secondTable, size_t pos);
+    CuckooConstIter(CuckooHashTable< Key, Value, Hash1, Hash2, Equal >* table, bool secondTable, size_t pos);
     void skipEmpty();
     CuckooHashTable< Key, Value, Hash1, Hash2, Equal >* table_;
     bool secondTable_;

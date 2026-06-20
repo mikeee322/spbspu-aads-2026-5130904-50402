@@ -1,7 +1,9 @@
 #ifndef HASHTABLE_HPP
 #define HASHTABLE_HPP
 
+#include "CuckooIter.hpp"
 #include "CuckooItem.hpp"
+
 #include <cstddef>
 
 namespace lachugin
@@ -392,9 +394,6 @@ namespace lachugin
   {
     return CuckooIter< Key, Value, Hash1, Hash2, Equal >(this, true, capacity_);
   }
-
-
-
 
 
 
