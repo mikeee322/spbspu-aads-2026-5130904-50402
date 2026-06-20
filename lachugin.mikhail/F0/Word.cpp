@@ -57,6 +57,16 @@ namespace lachugin
     return interpretation_;
   }
 
+  void Word::setPartOfSpeech(const std::string& partOfSpeech)
+  {
+    partOfSpeech_ = partOfSpeech;
+  }
+
+  const std::string& Word::getPartOfSpeech() const
+  {
+    return partOfSpeech_;
+  }
+
 
 
 
