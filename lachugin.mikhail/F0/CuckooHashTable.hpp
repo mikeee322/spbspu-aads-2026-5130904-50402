@@ -58,6 +58,7 @@ namespace lachugin
     size_t hashPos1(const Key&) const;
     size_t hashPos2(const Key&) const;
     void insertWithoutCheck(const Key&, const Value&);
+    void swap(CuckooHashTable& other);
 
     CuckooItem< Key, Value >* table1_;
     CuckooItem< Key, Value >* table2_;
@@ -182,6 +183,31 @@ namespace lachugin
       table2_[i] = other.table2_[i];
     }
   }
+
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  void CuckooHashTable< Key, Value, Hash1, Hash2, Equal >::swap(CuckooHashTable& other)
+  {
+    std::swap(table1_, other.table1_);
+    std::swap(table2_, other.table2_);
+    std::swap(capacity_, other.capacity_);
+    std::swap(size_, other.size_);
+    std::swap(hash1_, other.hash1_);
+    std::swap(hash2_, other.hash2_);
+    std::swap(equal_, other.equal_);
+  }
+
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  CuckooHashTable< Key, Value, Hash1, Hash2, Equal >&
+  CuckooHashTable< Key, Value, Hash1, Hash2, Equal >::operator=(const CuckooHashTable& other)
+  {
+    if (this != &other)
+    {
+      CuckooHashTable temp(other);
+      swap(temp);
+    }
+    return *this;
+  }
+
 
 
 
