@@ -208,6 +208,45 @@ namespace lachugin
     return *this;
   }
 
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  CuckooHashTable< Key, Value, Hash1, Hash2, Equal >::CuckooHashTable(CuckooHashTable&& other) noexcept:
+  table1_(other.table1_),
+  table2_(other.table2_),
+  capacity_(other.capacity_),
+  size_(other.size_),
+  hash1_(std::move(other.hash1_)),
+  hash2_(std::move(other.hash2_)),
+  equal_(std::move(other.equal_))
+  {
+    other.table1_ = nullptr;
+    other.table2_ = nullptr;
+    other.capacity_ = 0;
+    other.size_ = 0;
+  }
+
+
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  CuckooHashTable< Key, Value, Hash1, Hash2, Equal >&
+  CuckooHashTable< Key, Value, Hash1, Hash2, Equal >::operator=(CuckooHashTable&& other) noexcept
+  {
+    if (this != &other)
+    {
+      delete[] table1_;
+      delete[] table2_;
+      table1_ = other.table1_;
+      table2_ = other.table2_;
+      capacity_ = other.capacity_;
+      size_ = other.size_;
+      hash1_ = std::move(other.hash1_);
+      hash2_ = std::move(other.hash2_);
+      equal_ = std::move(other.equal_);
+      other.table1_ = nullptr;
+      other.table2_ = nullptr;
+      other.capacity_ = 0;
+      other.size_ = 0;
+    }
+    return *this;
+  }
 
 
 
