@@ -54,7 +54,10 @@ namespace lachugin
     words_.get(eng).setPartOfSpeech(pos);
   }
 
-
+  const std::string& Wordbook::getName() const
+  {
+    return name_;
+  }
 
 
 }
