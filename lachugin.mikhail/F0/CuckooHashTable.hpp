@@ -77,6 +77,69 @@ namespace lachugin
   size_(0)
   {}
 
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  CuckooHashTable< Key, Value, Hash1, Hash2, Equal >::~CuckooHashTable()
+  {
+    delete[] table1_;
+    delete[] table2_;
+  }
+
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  size_t CuckooHashTable<Key, Value, Hash1, Hash2, Equal>::size() const
+  {
+    return size_;
+  }
+
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  bool CuckooHashTable< Key, Value, Hash1, Hash2, Equal >::empty() const
+  {
+    return size_ == 0;
+  }
+
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  size_t CuckooHashTable< Key, Value, Hash1, Hash2, Equal >::hashPos1(const Key& key) const
+  {
+    return hash1_(key) % capacity_;
+  }
+
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  size_t CuckooHashTable< Key, Value, Hash1, Hash2, Equal >::hashPos2(const Key& key) const
+  {
+    return hash2_(key) % capacity_;
+  }
+
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  bool CuckooHashTable< Key, Value, Hash1, Hash2, Equal >::has(const Key& key) const
+  {
+    size_t pos1 = hashPos1(key);
+    if (table1_[pos1].occupied && equal_(table1_[pos1].data.first, key))
+    {
+      return true;
+    }
+    size_t pos2 = hashPos2(key);
+    if (table2_[pos2].occupied && equal_(table2_[pos2].data.first, key))
+    {
+      return true;
+    }
+    return false;
+  }
+
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  Value& CuckooHashTable< Key, Value, Hash1, Hash2, Equal >::get(const Key& key)
+  {
+    size_t pos1 = hashPos1(key);
+    if (table1_[pos1].occupied && equal_(table1_[pos1].data.first, key))
+    {
+      return table1_[pos1].data.second;
+    }
+    size_t pos2 = hashPos2(key);
+    if (table2_[pos2].occupied && equal_(table2_[pos2].data.first, key))
+    {
+      return table2_[pos2].data.second;
+    }
+    throw std::out_of_range("Key does not exist");
+  }
+
 
 
 }
