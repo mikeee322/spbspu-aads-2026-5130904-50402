@@ -25,10 +25,19 @@ namespace lachugin
     }
   };
 
+
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  class CuckooIter;
+
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  class CuckooConstIter;
+
   template< class Key, class Value, class Hash1, class Hash2, class Equal >
   class CuckooHashTable
   {
   public:
+    using it = CuckooIter< Key, Value, Hash1, Hash2, Equal >;
+    using constIt = CuckooConstIter< Key, Value, Hash1, Hash2, Equal >;
     using value_type = std::pair< Key, Value >;
     CuckooHashTable(size_t capacity = 17);
 
@@ -49,10 +58,10 @@ namespace lachugin
     bool empty() const;
     void rehash(size_t);
 
-    Iterator begin();
-    Iterator end();
-    ConstIterator begin() const;
-    ConstIterator end() const;
+    it begin();
+    it end();
+    constIt begin() const;
+    constIt end() const;
 
   private:
     size_t hashPos1(const Key&) const;
@@ -368,6 +377,9 @@ namespace lachugin
     }
     throw std::out_of_range("Key does not exist");
   }
+
+
+
 
 
 
