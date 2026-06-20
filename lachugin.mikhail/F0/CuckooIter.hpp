@@ -84,6 +84,34 @@ namespace lachugin
     return !(*this == other);
   }
 
+  template< class Key, class Value, class Hash1, class Hash2, class Equal >
+  void CuckooIter< Key, Value, Hash1, Hash2, Equal >::skipEmpty()
+  {
+    while (true)
+    {
+      if (!secondTable_)
+      {
+        while (pos_ < table_->capacity_ && !table_->table1_[pos_].occupied)
+        {
+          ++pos_;
+        }
+        if (pos_ < table_->capacity_)
+        {
+          return;
+        }
+        secondTable_ = true;
+        pos_ = 0;
+      }
+      while (pos_ < table_->capacity_ && !table_->table2_[pos_].occupied)
+      {
+        ++pos_;
+      }
+      return;
+    }
+  }
+
+
+
 
 }
 #endif
