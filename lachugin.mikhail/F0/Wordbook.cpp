@@ -45,5 +45,16 @@ namespace lachugin
     words_.get(eng).setInterpretation(interpretation);
   }
 
+  void Wordbook::assignPartOfSpeech(const std::string& eng, const std::string& pos)
+  {
+    if (!words_.has(eng))
+    {
+      throw std::logic_error("Word does not exist");
+    }
+    words_.get(eng).setPartOfSpeech(pos);
+  }
+
+
+
 
 }
