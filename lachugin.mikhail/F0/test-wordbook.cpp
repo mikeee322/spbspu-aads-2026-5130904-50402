@@ -106,4 +106,15 @@ BOOST_AUTO_TEST_CASE(wordbook_show_parts_of_speech_test)
   BOOST_CHECK(result.find("run") == std::string::npos);
 }
 
+BOOST_AUTO_TEST_CASE(wordbook_show_translate_eng_test)
+{
+  Wordbook wb("dict");
+  wb.addWord("watermelon", "арбуз");
+  std::stringstream out;
+  wb.showTranslate(out, "English", "watermelon");
+
+  BOOST_CHECK(out.str().find("арбуз") != std::string::npos);
+}
+
+
 

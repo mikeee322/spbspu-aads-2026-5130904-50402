@@ -117,7 +117,7 @@ namespace lachugin
     words_.add(eng, word);
   }
 
-  void Wordbook::showStartsWith(std::ostream& out, char letter) const
+  void Wordbook::showStartsWith(std::ostream& out, char letter)
   {
     for (auto it = words_.begin();it != words_.end();++it)
     {
@@ -140,7 +140,7 @@ namespace lachugin
     }
   }
 
-  void Wordbook::showPartsOfSpeech(std::ostream& out, const std::string& pos) const
+  void Wordbook::showPartsOfSpeech(std::ostream& out, const std::string& pos)
   {
     for (auto it = words_.begin(); it != words_.end(); ++it)
     {
@@ -163,7 +163,7 @@ namespace lachugin
     }
   }
 
-  void Wordbook::showTranslateEng(std::ostream& out, const std::string& word) const
+  void Wordbook::showTranslateEng(std::ostream& out, const std::string& word)
   {
     if (!hasWord(word))
     {
@@ -189,7 +189,7 @@ namespace lachugin
     out << "\n";
   }
 
-  void Wordbook::showTranslateRus(std::ostream& out, const std::string& word) const
+  void Wordbook::showTranslateRus(std::ostream& out, const std::string& word)
   {
     for (auto it = words_.begin(); it != words_.end(); ++it)
     {
@@ -211,7 +211,7 @@ namespace lachugin
     throw std::logic_error("Word does not exist");
   }
 
-  void Wordbook::showTranslate(std::ostream& out, const std::string& lang, const std::string& word) const
+  void Wordbook::showTranslate(std::ostream& out, const std::string& lang, const std::string& word)
   {
     if (lang == "English")
     {
@@ -225,6 +225,30 @@ namespace lachugin
       return;
     }
     throw std::logic_error("Language does not exist");
+  }
+
+  void Wordbook::show(std::ostream& out)
+  {
+    for (auto it = words_.begin(); it != words_.end(); ++it)
+    {
+      out << it->first << " - ";
+      const List< std::string >& translations = it->second.getTranslations();
+      bool firstTranslation = true;
+      for (auto tr = translations.begin(); tr != translations.end(); ++tr)
+      {
+        if (!firstTranslation)
+        {
+          out << ", ";
+        }
+        out << *tr;
+        firstTranslation = false;
+      }
+      if (it->second.hasInterpretation())
+      {
+        out << " (" << it->second.getInterpretation() << ")";
+      }
+      out << "\n";
+    }
   }
 
 
