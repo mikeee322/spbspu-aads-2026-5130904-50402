@@ -102,5 +102,13 @@ namespace lachugin
     return words_.begin();
   }
 
+  CuckooIter< std::string, Word, DefaultHash1< std::string >, DefaultHash2< std::string >,
+    std::equal_to< std::string > > Wordbook::end()
+  {
+    return words_.end();
+  }
+
+
+
 
 }
