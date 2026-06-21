@@ -8,6 +8,8 @@ namespace lachugin
   class WordbookManager
   {
   public:
+    using iter_type = CuckooIter< std::string, Word, DefaultHash1< std::string >, DefaultHash2< std::string >,
+      std::equal_to< std::string > >;
     void createWordbook(const std::string& name);
     void deleteWordbook(const std::string& name);
     bool hasWordbook(const std::string& name) const;
