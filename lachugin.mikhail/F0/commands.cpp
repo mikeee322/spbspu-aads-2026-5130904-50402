@@ -100,4 +100,23 @@ namespace lachugin
     manager.getWordbook(wordbook).showTranslate(out, language, word);
   }
 
+  void cmdShowStartsWith(std::istream& in, std::ostream& out, WordbookManager& manager)
+  {
+    std::string wordbook;
+    char letter;
+    in >> wordbook >> letter;
+    manager.getWordbook(wordbook).showStartsWith(out, letter);
+  }
+
+  void cmdShowPartsOfSpeech(std::istream& in, std::ostream& out, WordbookManager& manager)
+  {
+    std::string wordbook;
+    std::string part;
+
+    in >> wordbook >> part;
+    manager.getWordbook(wordbook).showPartsOfSpeech(out, part);
+  }
+
+
+
 }
