@@ -108,7 +108,14 @@ namespace lachugin
     return words_.end();
   }
 
-
+  void Wordbook::addWordObject(const std::string& eng, const Word& word)
+  {
+    if (words_.has(eng))
+    {
+      throw std::logic_error("Word already exists");
+    }
+    words_.add(eng, word);
+  }
 
 
 }
