@@ -117,5 +117,28 @@ namespace lachugin
     words_.add(eng, word);
   }
 
+  void Wordbook::showStartsWith(std::ostream& out, char letter) const
+  {
+    for (auto it = words_.begin();it != words_.end();++it)
+    {
+      if (!it->first.empty() && it->first[0] == letter)
+      {
+        out << it->first << " - ";
+        const List< std::string >& trs = it->second.getTranslations();
+        bool firstTranslation = true;
+        for (auto tr = trs.begin(); tr != trs.end(); ++tr)
+        {
+          if (!firstTranslation)
+          {
+            out << ", ";
+          }
+          out << *tr;
+          firstTranslation = false;
+        }
+        out << "\n";
+      }
+    }
+  }
+
 
 }
