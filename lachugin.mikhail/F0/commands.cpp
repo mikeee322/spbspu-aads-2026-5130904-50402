@@ -38,5 +38,30 @@ namespace lachugin
     out << "Word " << word << " was removed from " << wordbook << ".\n";
   }
 
+  void cmdAddAnother( std::istream& in, std::ostream& out, WordbookManager& manager)
+  {
+    std::string wordbook;
+    std::string eng;
+    std::string rus;
+    in >> wordbook >> eng >> rus;
+    manager.getWordbook(wordbook).addAnotherTranslation(eng, rus);
+
+    out<< "Added another translate of " << eng << " in " << wordbook << ".\n";
+  }
+
+
+  void cmdAddInterpretation(std::istream& in, std::ostream& out, WordbookManager& manager)
+  {
+    std::string wordbook;
+    std::string word;
+    in >> wordbook >> word;
+    std::string interpretation;
+    std::getline(in >> std::ws, interpretation);
+    manager.getWordbook(wordbook).addInterpretation(word, interpretation);
+
+    out << "Added interpretation of " << word<< " in " << wordbook << ".\n";
+  }
+
+
 
 }
