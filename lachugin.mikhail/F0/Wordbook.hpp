@@ -27,13 +27,16 @@ namespace lachugin
     void addWordObject(const std::string& eng, const Word& word);
     void showStartsWith(std::ostream& out, char letter) const;
     void showPartsOfSpeech(std::ostream& out, const std::string& pos) const;
+    void showTranslate(std::ostream& out, const std::string& lang, const std::string& word) const;
 
     CuckooIter< std::string, Word, DefaultHash1< std::string >, DefaultHash2< std::string >,
       std::equal_to< std::string > > begin();
-
     CuckooIter< std::string, Word, DefaultHash1< std::string >, DefaultHash2< std::string >,
       std::equal_to< std::string > > end();
   private:
+
+    void showTranslateEng(std::ostream& out, const std::string& word) const;
+    void showTranslateRus(std::ostream& out,const std::string& word) const;
     std::string name_;
     table_type words_;
   };

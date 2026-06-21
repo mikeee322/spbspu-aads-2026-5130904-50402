@@ -163,7 +163,69 @@ namespace lachugin
     }
   }
 
+  void Wordbook::showTranslateEng(std::ostream& out, const std::string& word) const
+  {
+    if (!hasWord(word))
+    {
+      throw std::logic_error("Word does not exist");
+    }
+    const Word& currentWord = getWord(word);
+    out << word << " - ";
+    const List< std::string >& translations = currentWord.getTranslations();
+    bool firstTranslation = true;
+    for (auto it = translations.begin(); it != translations.end(); ++it)
+    {
+      if (!firstTranslation)
+      {
+        out << ", ";
+      }
+      out << *it;
+      firstTranslation = false;
+    }
+    if (currentWord.hasInterpretation())
+    {
+      out << " (" << currentWord.getInterpretation() << ")";
+    }
+    out << "\n";
+  }
 
+  void Wordbook::showTranslateRus(std::ostream& out, const std::string& word) const
+  {
+    for (auto it = words_.begin(); it != words_.end(); ++it)
+    {
+      const List< std::string >& translations = it->second.getTranslations();
+      for (auto tr = translations.begin(); tr != translations.end(); ++tr)
+      {
+        if (*tr == word)
+        {
+          out << word << " -> " << it->first;
+          if (it->second.hasInterpretation())
+          {
+            out << " (" << it->second.getInterpretation() << ")";
+          }
+          out << "\n";
+          return;
+        }
+      }
+    }
+    throw std::logic_error("Word does not exist");
+  }
+
+  void Wordbook::showTranslate(std::ostream& out, const std::string& lang, const std::string& word) const
+  {
+    if (lang == "English")
+    {
+      showTranslateEng(out, word);
+      return;
+    }
+
+    if (lang == "Russian")
+    {
+      showTranslateRus(out, word);
+      return;
+    }
+    throw std::logic_error("Language does not exist");
+  }
 
 
 }
