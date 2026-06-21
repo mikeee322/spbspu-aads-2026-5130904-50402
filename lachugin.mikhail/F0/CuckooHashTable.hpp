@@ -5,6 +5,8 @@
 #include "CuckooItem.hpp"
 
 #include <cstddef>
+#include <functional>
+#include <stdexcept>
 
 namespace lachugin
 {

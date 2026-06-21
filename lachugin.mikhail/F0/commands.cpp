@@ -63,7 +63,7 @@ namespace lachugin
   }
 
 
-  void lachugin::cmdRemoveInterpretation(std::istream& in, std::ostream& out, WordbookManager& manager)
+  void cmdRemoveInterpretation(std::istream& in, std::ostream& out, WordbookManager& manager)
   {
     std::string wordbook;
     std::string word;
