@@ -8,6 +8,9 @@ namespace lachugin
   class Wordbook
   {
   public:
+    using table_type = CuckooHashTable< std::string, Word, DefaultHash1 <std::string >,
+      DefaultHash2< std::string >, std::equal_to< std::string > >;
+    Wordbook();
     Wordbook(const std::string& name);
     const std::string& getName() const;
 
@@ -20,11 +23,15 @@ namespace lachugin
     bool hasWord(const std::string& eng) const;
     Word& getWord(const std::string& eng);
     const Word& getWord(const std::string& eng) const;
+
+    CuckooIter< std::string, Word, DefaultHash1< std::string >, DefaultHash2< std::string >,
+      std::equal_to< std::string > > begin();
+
+    CuckooIter< std::string, Word, DefaultHash1< std::string >, DefaultHash2< std::string >,
+      std::equal_to< std::string > > end();
   private:
     std::string name_;
-
-    CuckooHashTable< std::string, Word, DefaultHash1< std::string >, DefaultHash2< std::string >,
-      std::equal_to< std::string > > words_;
+    table_type words_;
   };
 }
 

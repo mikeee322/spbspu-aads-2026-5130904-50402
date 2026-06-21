@@ -2,6 +2,11 @@
 
 namespace lachugin
 {
+
+  Wordbook::Wordbook():
+  name_("")
+  {}
+
   Wordbook::Wordbook(const std::string& name):
   name_(name)
   {}
@@ -89,6 +94,12 @@ namespace lachugin
       throw std::logic_error("Word does not exist");
     }
     words_.get(eng).removeInterpretation();
+  }
+
+  CuckooIter< std::string, Word, DefaultHash1< std::string >, DefaultHash2< std::string >,
+    std::equal_to< std::string > > Wordbook::begin()
+  {
+    return words_.begin();
   }
 
 
