@@ -8,7 +8,8 @@ namespace lachugin
 {
   void cmdMake(std::istream&, std::ostream&, WordbookManager&);
   void cmdDelete(std::istream&, std::ostream&, WordbookManager&);
-
+  void cmdAddWord(std::istream&, std::ostream&, WordbookManager&);
+  void cmdRemove(std::istream&, std::ostream&, WordbookManager&);
 }
 
 #endif
