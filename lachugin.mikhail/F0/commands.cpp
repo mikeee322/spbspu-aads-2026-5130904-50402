@@ -84,4 +84,20 @@ namespace lachugin
     out << "Assign " << word<< " to " << pos << "s.\n";
   }
 
+  void cmdShow(std::istream& in, std::ostream& out, WordbookManager& manager)
+  {
+    std::string wordbook;
+    in >> wordbook;
+    manager.getWordbook(wordbook).show(out);
+  }
+
+  void cmdShowTranslate(std::istream& in, std::ostream& out, WordbookManager& manager)
+  {
+    std::string wordbook;
+    std::string language;
+    std::string word;
+    in >> wordbook >> language >> word;
+    manager.getWordbook(wordbook).showTranslate(out, language, word);
+  }
+
 }

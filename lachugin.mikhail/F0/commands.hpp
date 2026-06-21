@@ -14,6 +14,11 @@ namespace lachugin
   void cmdAddInterpretation(std::istream&, std::ostream&, WordbookManager&);
   void cmdRemoveInterpretation(std::istream&, std::ostream&, WordbookManager&);
   void cmdDivWord(std::istream&, std::ostream&, WordbookManager&);
+  void cmdShow(std::istream&, std::ostream&, WordbookManager&);
+  void cmdShowTranslate(std::istream&, std::ostream&, WordbookManager&);
+  void cmdShowStartsWith(std::istream&, std::ostream&, WordbookManager&);
+  void cmdShowPartsOfSpeech(std::istream&, std::ostream&, WordbookManager&);
+  void cmdMerge(std::istream&, std::ostream&, WordbookManager&);
 }
 
 #endif
