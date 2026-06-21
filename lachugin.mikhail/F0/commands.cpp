@@ -63,5 +63,25 @@ namespace lachugin
   }
 
 
+  void lachugin::cmdRemoveInterpretation(std::istream& in, std::ostream& out, WordbookManager& manager)
+  {
+    std::string wordbook;
+    std::string word;
+    in >> wordbook >> word;
+    manager.getWordbook(wordbook).removeInterpretation(word);
+
+    out << "Interpretation of " << word << " in " << wordbook << " was removed\n";
+  }
+
+  void cmdDivWord(std::istream& in, std::ostream& out, WordbookManager& manager)
+  {
+    std::string wordbook;
+    std::string word;
+    std::string pos;
+    in >> wordbook >> word >> pos;
+    manager.getWordbook(wordbook).assignPartOfSpeech(word, pos);
+
+    out << "Assign " << word<< " to " << pos << "s.\n";
+  }
 
 }
