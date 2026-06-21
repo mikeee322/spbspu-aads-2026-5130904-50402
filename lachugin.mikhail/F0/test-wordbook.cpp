@@ -91,4 +91,19 @@ BOOST_AUTO_TEST_CASE(wordbook_has_word_test)
   BOOST_TEST(wb.hasWord("apple"));
 }
 
+BOOST_AUTO_TEST_CASE(wordbook_show_parts_of_speech_test)
+{
+  Wordbook wb("dict");
+  wb.addWord("watermelon", "арбуз");
+  wb.addWord("run", "бежать");
+  wb.assignPartOfSpeech("watermelon", "noun");
+  wb.assignPartOfSpeech("run", "verb");
+
+  std::stringstream out;
+  wb.showPartsOfSpeech(out, "noun");
+  std::string result = out.str();
+  BOOST_CHECK(result.find("watermelon") != std::string::npos);
+  BOOST_CHECK(result.find("run") == std::string::npos);
+}
+
 

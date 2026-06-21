@@ -26,6 +26,7 @@ namespace lachugin
 
     void addWordObject(const std::string& eng, const Word& word);
     void showStartsWith(std::ostream& out, char letter) const;
+    void showPartsOfSpeech(std::ostream& out, const std::string& pos) const;
 
     CuckooIter< std::string, Word, DefaultHash1< std::string >, DefaultHash2< std::string >,
       std::equal_to< std::string > > begin();

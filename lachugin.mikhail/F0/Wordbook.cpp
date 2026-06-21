@@ -140,5 +140,30 @@ namespace lachugin
     }
   }
 
+  void Wordbook::showPartsOfSpeech(std::ostream& out, const std::string& pos) const
+  {
+    for (auto it = words_.begin(); it != words_.end(); ++it)
+    {
+      if (it->second.getPartOfSpeech() == pos)
+      {
+        out << it->first << " - ";
+        const List< std::string >& trs = it->second.getTranslations();
+        bool firstTranslation = true;
+        for (auto tr = trs.begin(); tr != trs.end(); ++tr)
+        {
+          if (!firstTranslation)
+          {
+            out << ", ";
+          }
+          out << *tr;
+          firstTranslation = false;
+        }
+        out << "\n";
+      }
+    }
+  }
+
+
+
 
 }
