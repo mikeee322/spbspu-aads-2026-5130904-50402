@@ -117,6 +117,15 @@ namespace lachugin
     manager.getWordbook(wordbook).showPartsOfSpeech(out, part);
   }
 
+  void cmdMerge(std::istream& in, std::ostream& out, WordbookManager& manager)
+  {
+    std::string result;
+    std::string first;
+    std::string second;
+    in >> result >> first >> second;
+    manager.merge(result, first, second);
 
+    out << "Wordbooks " << first << " and " << second << " were merged into " << result << ".\n";
+  }
 
 }
