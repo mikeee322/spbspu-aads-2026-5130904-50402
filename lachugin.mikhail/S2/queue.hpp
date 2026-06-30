@@ -1,7 +1,7 @@
 #ifndef QUEUE_HPP
 #define QUEUE_HPP
-#include "../common/list.hpp"
-#include "../common/itters.hpp"
+#include <list.hpp>
+#include <itters.hpp>
 #include <utility>
 #include <iostream>
 namespace lachugin
