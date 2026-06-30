@@ -4,9 +4,9 @@
 #include <string>
 #include "stack.hpp"
 
-namespace lachugin
+namespace
 {
-  long long sum(long long& a, long long& b)
+  long long sum(long long a, long long b)
   {
     if ((a > LLONG_MAX - b) || (a < LLONG_MIN + b))
     {
@@ -15,7 +15,7 @@ namespace lachugin
     return a + b;
   }
 
-  long long subtraction(long long &a, long long &b)
+  long long subtraction(long long a, long long b)
   {
     if (a < b + LLONG_MIN)
     {
@@ -24,7 +24,7 @@ namespace lachugin
     return a - b;
   }
 
-  long long multiply(long long& a, long long& b)
+  long long multiply(long long a, long long b)
   {
     if (a > 0 && b > 0 && a > LLONG_MAX / b)
     {
@@ -46,7 +46,7 @@ namespace lachugin
     return a * b;
   }
 
-  long long divide(long long &a, long long &b)
+  long long divide(long long a, long long b)
   {
     if (b == 0)
     {
@@ -55,7 +55,7 @@ namespace lachugin
     return a / b;
   }
 
-  long long mod(long long &a, long long &b)
+  long long mod(long long a, long long b)
   {
     if (b == 0)
     {
@@ -68,8 +68,13 @@ namespace lachugin
     }
     return res;
   }
+}
 
-  void reversal(std::string &a)
+
+namespace lachugin
+{
+
+  void reversal(std::string& a)
   {
     long long r = std::stoll(a);
     Stack< long long > s;

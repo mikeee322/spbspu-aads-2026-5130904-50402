@@ -4,6 +4,13 @@
 #include "operations.hpp"
 #include <iostream>
 
+namespace
+{
+  bool isOperator(const std::string& val)
+  {
+    return val == "+" || val == "-" || val == "*" || val == "/" || val == "%" || val == "#";
+  }
+}
 
 namespace lachugin
 {
@@ -17,10 +24,6 @@ namespace lachugin
     }
   }
 
-  bool isOperator(const std::string& val)
-  {
-    return val == "+" || val == "-" || val == "*" || val == "/" || val == "%" || val == "#";
-  }
 
   Queue< std::string > infixToPostfix(Queue< std::string >& q)
   {
