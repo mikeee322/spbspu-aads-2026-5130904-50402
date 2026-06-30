@@ -4,7 +4,8 @@
 #include "node.hpp"
 namespace lachugin
 {
-  template < class T > class List;
+  template < class T >
+  class List;
 
   template < class T >
   class LIter
@@ -12,7 +13,10 @@ namespace lachugin
     friend class List< T >;
     Node< T >* curr;
   public:
-    explicit LIter(Node< T >* n) : curr(n) {}
+    explicit LIter(Node< T >* n):
+    curr(n)
+    {}
+
     T& operator*() const;
 
     LIter& operator++();
@@ -64,8 +68,8 @@ namespace lachugin
     return* this;
   }
 
-  template<class T>
-LIter<T>& LIter<T>::operator+=(size_t k)
+  template< class T >
+  LIter< T >& LIter< T >::operator+=(size_t k)
   {
     for (size_t i = 0; i < k; ++i)
     {
