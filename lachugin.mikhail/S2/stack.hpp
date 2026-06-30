@@ -1,15 +1,17 @@
 #ifndef STACK_HPP
 #define STACK_HPP
 #include "../common/list.hpp"
+#include <utility>
 #include <iostream>
 namespace lachugin
 {
-  template< typename T > class Stack
+  template< typename T >
+  class Stack
   {
     List< T > l;
-    Node< T >* curr = nullptr;
   public:
     void push(const T& rhs);
+    void push(T&& rhs);
     void pop();
     T& top();
     bool empty() const;
@@ -20,6 +22,12 @@ namespace lachugin
   void Stack< T >::push(const T& rhs)
   {
     l.pushBack(rhs);
+  }
+
+  template< typename T>
+  void Stack< T >::push(T&& rhs)
+  {
+    l.pushBack(std::move(rhs));
   }
 
   template< typename T >

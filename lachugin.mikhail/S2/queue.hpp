@@ -2,15 +2,17 @@
 #define QUEUE_HPP
 #include "../common/list.hpp"
 #include "../common/itters.hpp"
+#include <utility>
 #include <iostream>
 namespace lachugin
 {
-  template< typename T > class Queue
+  template< typename T >
+  class Queue
   {
     List< T > l;
-    Node< T >* curr = nullptr;
   public:
     void push(const T& rhs);
+    void push(T&& rhs);
     void pop();
     T& front();
     bool empty() const;
@@ -21,16 +23,18 @@ namespace lachugin
   void Queue< T >::pop()
   {
     l.popFront();
-    if (l.empty())
-    {
-      curr = nullptr;
-    }
   }
 
   template< typename T >
   void Queue< T >::push(const T& rhs)
   {
     l.pushBack(rhs);
+  }
+
+  template<class T>
+  void Queue<T>::push(T&& rhs)
+  {
+    l.pushBack(std::move(rhs));
   }
 
   template< typename T >
