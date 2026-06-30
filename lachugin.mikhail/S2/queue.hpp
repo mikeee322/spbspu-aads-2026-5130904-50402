@@ -15,8 +15,8 @@ namespace lachugin
     void push(T&& rhs);
     void pop();
     T& front();
-    bool empty() const;
-    size_t size() const;
+    bool empty() const noexcept;
+    size_t size() const noexcept;
   };
 
   template< typename T >
@@ -44,13 +44,13 @@ namespace lachugin
   }
 
   template< typename T >
-  bool Queue< T >::empty() const
+  bool Queue< T >::empty() const noexcept
   {
     return l.empty();
   }
 
   template< typename T >
-  size_t Queue< T >::size() const
+  size_t Queue< T >::size() const noexcept
   {
     return l.size();
   }
