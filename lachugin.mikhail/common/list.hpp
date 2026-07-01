@@ -18,8 +18,12 @@ namespace lachugin
 
     Node< T >* addNext(const T& val, Node< T >* h);
     Node< T >* add(const T& val);
+
     void pushBack(const T& val);
     void pushBack(T&& val);
+
+    template< class... Args >
+    void emplaceBack(Args&&... args);
 
     LIter< T > begin();
     LCIter< T > begin() const;
@@ -92,7 +96,7 @@ namespace lachugin
   template < class T >
   Node< T >* List< T >::add(const T& val)
   {
-    Node< T >* n = new Node< T >{val, fake->next};
+    Node< T >* n = new Node< T >(fake, val);;
     fake->next = n;
     size_++;
     return n;
@@ -101,7 +105,7 @@ namespace lachugin
   template < class T >
   Node< T >* List< T >::addNext(const T& val, Node< T >* h)
   {
-    Node< T >* n = new Node< T >{val, h->next};
+    Node< T >* n = new Node< T >(fake, val);;
     h->next = n;
     size_++;
     return n;
@@ -261,7 +265,7 @@ namespace lachugin
       it = it->next;
     }
 
-    Node< T >* n = new Node< T >{val, fake};
+    Node< T >* n = new Node< T >(fake, val);;
     it->next = n;
     size_++;
   }
@@ -276,7 +280,7 @@ namespace lachugin
       it = it->next;
     }
 
-    Node< T >* n = new Node< T >{ std::move(val), fake };
+    Node< T >* n = new Node< T >(fake, val);;
     it->next = n;
     ++size_;
   }
@@ -300,6 +304,8 @@ namespace lachugin
     delete victim;
     --size_;
   }
+
+
 
 }
 #endif
